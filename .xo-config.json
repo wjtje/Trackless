@@ -1,0 +1,6 @@
+{
+	"semicolon": false,
+	"extends": [
+		"xo-react"
+	]
+}
