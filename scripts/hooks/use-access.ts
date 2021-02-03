@@ -20,12 +20,21 @@ function useAccess(): {
 	const {enqueueSnackbar} = useSnackbar()
 	useEffect(() => {
 		if (error !== undefined) {
+			// This key makes sure that only one message is shown every minute
+			const key = `${new Date(Date.now()).getMinutes()}-access`
+
 			switch (error.status) {
 				case 403:
-					enqueueSnackbar('You don\'t have access to do that')
+					enqueueSnackbar('You don\'t have access to do that', {
+						key: `${key}-403`,
+						variant: 'warning'
+					})
 					break
 				default:
-					enqueueSnackbar('Something went wrong')
+					enqueueSnackbar('Something went wrong', {
+						key: `${key}-other`,
+						variant: 'error'
+					})
 			}
 		}
 	}, [error, enqueueSnackbar])
