@@ -58,7 +58,6 @@ const MyApp = ({Component, pageProps}: {
 						<SWRConfig
 							value={{
 								fetcher: fetcher(apiKey, serverUrl),
-								// TODO: should use a onErrorRetry to make sure the app recovers from a broken state (https://swr.vercel.app/docs/error-handling)
 								shouldRetryOnError: false
 							}}
 						>
