@@ -54,7 +54,7 @@ const MyApp = ({Component, pageProps}: {
 				}}
 			>
 				<ThemeProvider theme={theme}>
-					<SnackbarProvider maxSnack={3}>
+					<SnackbarProvider preventDuplicate maxSnack={3}>
 						<SWRConfig
 							value={{
 								fetcher: fetcher(apiKey, serverUrl),
