@@ -8,7 +8,7 @@
 
 ## What is this project
 
-This is a project to cobine Trackless-Server and Trackless-React into one system
+This is a project to combine Trackless-Server and Trackless-React into one package
 
 ## How to run the development server
 
@@ -47,13 +47,6 @@ This project is used to learn how to create a server (and client) application wi
 ### Should I even use this project?
 
 The short anwser is no, and the longer anwser is still no.
-
-## Npm commands
-
- - `dev` Compile the code and run it. Refresh if a file changes.
- - `build` Compile the code without sourcemap.
- - `start` Run the code in the build folder.
- - `test` Test your code for any error's and try's to compile it.
 
 ## LICENSE
 
