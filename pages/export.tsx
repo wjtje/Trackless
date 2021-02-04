@@ -1,11 +1,9 @@
-import {AppBar, Container, createStyles, Fab, makeStyles, Theme, Typography} from '@material-ui/core'
+import {createStyles, Fab, makeStyles, Theme, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
-import AppBarSearch from '../components/app-bar-search'
 import clsns from 'classnames'
 import TracklessUser from '../scripts/classes/trackless-user'
 import GetAppIcon from '@material-ui/icons/GetApp'
-import {useDrawerStyles} from '../components/app-drawer'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',

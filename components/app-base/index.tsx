@@ -2,6 +2,8 @@ import {Container, createStyles, CssBaseline, makeStyles} from '@material-ui/cor
 import React, {useState} from 'react'
 import AppBaseBar from '../app-base-bar'
 import AppDrawer from '../app-drawer'
+import {AnimatePresence, motion} from 'framer-motion'
+import {useRouter} from 'next/router'
 
 const useStyle = makeStyles(theme => createStyles({
 	root: {
@@ -43,6 +45,7 @@ interface props {
  */
 const AppBase = ({children}: props) => {
 	const classes = useStyle()
+	const router = useRouter()
 
 	const [drawer, setDrawer] = useState(false)
 
@@ -66,7 +69,27 @@ const AppBase = ({children}: props) => {
 			<div className={classes.content}>
 				<div className={classes.scroll}>
 					<Container className={classes.defaultSizedContainer}>
-						{children}
+						{/* This is animating page changes */}
+						<AnimatePresence exitBeforeEnter>
+							<motion.div
+								key={router.route}
+								className={classes.defaultSizedContainer}
+								initial="hidden"
+								animate="visable"
+								exit="hidden"
+								// Define the animation
+								variants={{
+									hidden: {
+										opacity: 0
+									},
+									visable: {
+										opacity: 1
+									}
+								}}
+							>
+								{children}
+							</motion.div>
+						</AnimatePresence>
 					</Container>
 				</div>
 			</div>
