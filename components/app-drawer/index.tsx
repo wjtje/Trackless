@@ -24,30 +24,11 @@ export const drawerWidth = 240
  */
 export const useDrawerStyles = makeStyles((theme: Theme) =>
 	createStyles({
-		root: {
-			display: 'flex'
-		},
 		drawer: {
 			[theme.breakpoints.up('md')]: {
 				width: drawerWidth,
 				flexShrink: 0
 			}
-		},
-		appBar: {
-			zIndex: theme.zIndex.drawer + 1
-			// [theme.breakpoints.up('md')]: {
-			// 	width: `calc(100% - ${drawerWidth}px)`,
-			// 	marginLeft: drawerWidth
-			// }
-		},
-		menuButton: {
-			marginRight: theme.spacing(2),
-			[theme.breakpoints.up('md')]: {
-				display: 'none'
-			}
-		},
-		mainContent: {
-			marginTop: theme.spacing(2)
 		},
 		// Necessary for content to be below app bar
 		toolbar: theme.mixins.toolbar,
@@ -58,9 +39,6 @@ export const useDrawerStyles = makeStyles((theme: Theme) =>
 		},
 		drawerPaper: {
 			width: drawerWidth
-		},
-		content: {
-			flexGrow: 1
 		},
 		// Styles for the list items
 		listItem: {
@@ -117,6 +95,7 @@ const AppDrawer = (props: Props) => {
 							className={clsns(classes.listItem, {
 								[classes.listItemActive]: router.pathname === '/export'
 							})}
+							onClick={props.onDrawerClose}
 						>
 							<ListItemIcon>
 								<ImportExportIcon className={clsns({
@@ -135,6 +114,7 @@ const AppDrawer = (props: Props) => {
 							className={clsns(classes.listItem, {
 								[classes.listItemActive]: router.pathname === '/account'
 							})}
+							onClick={props.onDrawerClose}
 						>
 							<ListItemIcon>
 								<AccountBoxIcon className={clsns({

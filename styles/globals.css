@@ -14,22 +14,3 @@ a {
 * {
   box-sizing: border-box;
 }
-
-.container {
-  min-height: calc(100vh - 56px);
-  padding-top: 16px;
-  padding-bottom: 16px;
-  overflow: hidden;
-}
-
-@media (min-width:0px) and (orientation: landscape) {
-  .container {
-    min-height: calc(100vh - 48px);
-  }
-}
-
-@media (min-width:600px) {
-  .container {
-    min-height: calc(100vh - 64px);
-  }
-}

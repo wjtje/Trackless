@@ -2,12 +2,13 @@ import {ThemeProvider} from '@material-ui/core'
 import Head from 'next/head'
 import Router from 'next/router'
 import {SnackbarProvider} from 'notistack'
-import React, {createContext, Dispatch, useEffect} from 'react'
+import React, {createContext, Dispatch, useEffect, useState} from 'react'
 import {SWRConfig} from 'swr'
 import createPersistedState from 'use-persisted-state'
 import fetcher from '../scripts/global/fetcher'
 import '../styles/globals.css'
 import theme from '../theme/theme'
+import AppBase from '../components/app-base'
 
 const useServerUrl = createPersistedState('serverUrl')
 const useApiKey = createPersistedState('apiKey')
@@ -61,7 +62,9 @@ const MyApp = ({Component, pageProps}: {
 								shouldRetryOnError: false
 							}}
 						>
-							<Component {...pageProps}/>
+							<AppBase>
+								<Component {...pageProps}/>
+							</AppBase>
 						</SWRConfig>
 					</SnackbarProvider>
 				</ThemeProvider>
