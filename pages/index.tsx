@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => createStyles({
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
-		height: '100vh'
+		height: '100%'
 	},
 	loadingText: {
 		textAlign: 'center'
