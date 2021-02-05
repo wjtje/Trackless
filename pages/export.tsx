@@ -1,9 +1,10 @@
-import {createStyles, Fab, makeStyles, Theme, Typography} from '@material-ui/core'
+import {createStyles, Fab, makeStyles, Theme, Typography, Zoom} from '@material-ui/core'
 import React, {useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
 import TracklessUser from '../scripts/classes/trackless-user'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PageFade from '../components/page-fade'
+import {useIsPresent} from 'framer-motion'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const Export = () => {
 	const {users} = useUsers()
 	const classes = useStyles()
+	const isPresent = useIsPresent() // This is used for the zoom animation
 
 	const [selectedUser, setSelectedUser] = useState<TracklessUser>(null)
 
@@ -74,14 +76,16 @@ const Export = () => {
 				</div>
 			</PageFade>
 
-			<Fab
-				className={classes.fab}
-				variant="extended"
-				color="secondary"
-			>
-				<GetAppIcon className={classes.extendedIcon}/>
-				Download
-			</Fab>
+			<Zoom in={isPresent}>
+				<Fab
+					className={classes.fab}
+					variant="extended"
+					color="secondary"
+				>
+					<GetAppIcon className={classes.extendedIcon}/>
+					Download
+				</Fab>
+			</Zoom>
 		</>
 	)
 }
