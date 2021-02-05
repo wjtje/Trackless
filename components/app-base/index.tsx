@@ -2,9 +2,10 @@ import {Container, createStyles, CssBaseline, makeStyles} from '@material-ui/cor
 import React, {useState} from 'react'
 import AppBaseBar from '../app-base-bar'
 import AppDrawer from '../app-drawer'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence} from 'framer-motion'
 import {useRouter} from 'next/router'
 
+// Custom styles used on this page
 const useStyle = makeStyles(theme => createStyles({
 	root: {
 		display: 'flex'
@@ -24,9 +25,9 @@ const useStyle = makeStyles(theme => createStyles({
 	toolbar: theme.mixins.toolbar,
 	scroll: {
 		height: '100%',
-		overflow: 'auto',
-		paddingTop: theme.spacing(2),
-		paddingBottom: theme.spacing(2)
+		overflow: 'auto'
+		// PaddingTop: theme.spacing(2),
+		// paddingBottom: theme.spacing(2)
 	},
 	defaultSizedContainer: {
 		height: '100%'
@@ -66,19 +67,18 @@ const AppBase = ({children}: props) => {
 				}}
 			/>
 
+			{/* Make sure the content take the full height and the scrollbar is on the right side of the screen */}
 			<div className={classes.content}>
 				<div className={classes.scroll}>
-					<Container className={classes.defaultSizedContainer}>
-						{/* This is animating page changes */}
-						<AnimatePresence exitBeforeEnter>
-							<div
-								key={router.route}
-								className={classes.defaultSizedContainer}
-							>
-								{children}
-							</div>
-						</AnimatePresence>
-					</Container>
+					{/* This is animating page changes */}
+					<AnimatePresence exitBeforeEnter>
+						<div
+							key={router.route}
+							className={classes.defaultSizedContainer}
+						>
+							{children}
+						</div>
+					</AnimatePresence>
 				</div>
 			</div>
 		</div>

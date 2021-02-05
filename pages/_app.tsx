@@ -24,6 +24,9 @@ export const ServerContext = createContext({} as {
 	setApiKey: Dispatch<(previousState: string) => string>;
 })
 
+/**
+ * This is the base of the site shown on every page
+ */
 const MyApp = ({Component, pageProps}: {
 	Component: () => JSX.Element;
 	pageProps: any;

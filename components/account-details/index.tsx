@@ -43,7 +43,7 @@ const AccountDetails = ({account, isLoading}: props) => {
 					</th>
 					<td>
 						<Typography>
-							{isLoading ? <Skeleton/> : account?.firstname}
+							{isLoading ? <Skeleton width={150}/> : account?.firstname}
 						</Typography>
 					</td>
 				</tr>
@@ -56,7 +56,7 @@ const AccountDetails = ({account, isLoading}: props) => {
 					</th>
 					<td>
 						<Typography>
-							{isLoading ? <Skeleton/> : account?.lastname}
+							{isLoading ? <Skeleton width={150}/> : account?.lastname}
 						</Typography>
 					</td>
 				</tr>
@@ -69,7 +69,7 @@ const AccountDetails = ({account, isLoading}: props) => {
 					</th>
 					<td>
 						<Typography>
-							{isLoading ? <Skeleton/> : account?.username}
+							{isLoading ? <Skeleton width={150}/> : account?.username}
 						</Typography>
 					</td>
 				</tr>
@@ -82,7 +82,7 @@ const AccountDetails = ({account, isLoading}: props) => {
 					</th>
 					<td>
 						<Typography>
-							{isLoading ? <Skeleton/> : account?.groupName}
+							{isLoading ? <Skeleton width={150}/> : account?.groupName}
 						</Typography>
 					</td>
 				</tr>
