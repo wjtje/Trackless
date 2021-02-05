@@ -1,9 +1,9 @@
 import {createStyles, Fab, makeStyles, Theme, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
-import clsns from 'classnames'
 import TracklessUser from '../scripts/classes/trackless-user'
 import GetAppIcon from '@material-ui/icons/GetApp'
+import PageFade from '../components/page-fade'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -59,18 +59,20 @@ const Export = () => {
 	// 			/>
 
 		<>
-			<div className={clsns(classes.container)}>
-				{/* Show a hint when no user is selected */}
-				{(selectedUser === null) ?
-					<div>
-						<Typography variant="h5" className={classes.emptyText}>
-							No user selected
-						</Typography>
-						<Typography variant="body2" className={classes.emptyText}>
-							Select a user from the searchbar or download all users at once
-						</Typography>
-					</div> : <Typography>{selectedUser.fullname} - {selectedUser.userID}</Typography> }
-			</div>
+			<PageFade>
+				<div className={classes.container}>
+					{/* Show a hint when no user is selected */}
+					{(selectedUser === null) ?
+						<div>
+							<Typography variant="h5" className={classes.emptyText}>
+								No user selected
+							</Typography>
+							<Typography variant="body2" className={classes.emptyText}>
+								Select a user from the searchbar or download all users at once
+							</Typography>
+						</div> : <Typography>{selectedUser.fullname} - {selectedUser.userID}</Typography> }
+				</div>
+			</PageFade>
 
 			<Fab
 				className={classes.fab}

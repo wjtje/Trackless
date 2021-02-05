@@ -71,24 +71,12 @@ const AppBase = ({children}: props) => {
 					<Container className={classes.defaultSizedContainer}>
 						{/* This is animating page changes */}
 						<AnimatePresence exitBeforeEnter>
-							<motion.div
+							<div
 								key={router.route}
 								className={classes.defaultSizedContainer}
-								initial="hidden"
-								animate="visable"
-								exit="hidden"
-								// Define the animation
-								variants={{
-									hidden: {
-										opacity: 0
-									},
-									visable: {
-										opacity: 1
-									}
-								}}
 							>
 								{children}
-							</motion.div>
+							</div>
 						</AnimatePresence>
 					</Container>
 				</div>

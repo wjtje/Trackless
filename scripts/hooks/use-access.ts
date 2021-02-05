@@ -1,6 +1,7 @@
 import {useSnackbar} from 'notistack'
-import {useEffect} from 'react'
+import {useContext, useEffect} from 'react'
 import useSWR from 'swr'
+import {ServerContext} from '../../pages/_app'
 import TracklessAccess from '../classes/trackless-access'
 import HttpRequestError from '../error/http-request-error'
 
@@ -13,13 +14,15 @@ function useAccess(): {
 	isLoading: boolean;
 	error: HttpRequestError;
 } {
+	const {enqueueSnackbar} = useSnackbar()
+	const {serverUrl, apiKey} = useContext(ServerContext)
+
 	// Get the data from the server
 	const {data, error} = useSWR('/user/~/access')!
 
 	// Check for any error
-	const {enqueueSnackbar} = useSnackbar()
 	useEffect(() => {
-		if (error !== undefined) {
+		if (error !== undefined && (serverUrl !== '' && apiKey !== '')) {
 			// This key makes sure that only one message is shown every minute
 			const key = `${new Date(Date.now()).getMinutes()}-access`
 
@@ -37,7 +40,7 @@ function useAccess(): {
 					})
 			}
 		}
-	}, [error, enqueueSnackbar])
+	}, [error, enqueueSnackbar, serverUrl, apiKey])
 
 	// Parse the data
 	const access: TracklessAccess[] = []

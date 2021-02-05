@@ -1,10 +1,11 @@
-import {AppBar, Button, Container, TextField, Toolbar, Typography} from '@material-ui/core'
+import {Button, Container, TextField, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
 import styles from '../styles/Login.module.css'
 import {useSnackbar} from 'notistack'
 import getApiKey from '../scripts/pages/login/get-api-key'
 import {ServerContext} from './_app'
 import Head from 'next/head'
+import PageFade from '../components/page-fade'
 
 const LoginPage = () => {
 	const {enqueueSnackbar} = useSnackbar()
@@ -16,22 +17,15 @@ const LoginPage = () => {
 	const [deviceName, setDeviceName] = useState('')
 
 	return (
-		<>
+		<PageFade>
 			<Head>
 				<title key="title">Trackless - Sing in</title>
 			</Head>
 
-			<AppBar position="static">
-				<Toolbar>
-					<Typography variant="h6">
-						Sign in
-					</Typography>
-				</Toolbar>
-			</AppBar>
-
 			<Container
-				maxWidth="sm" style={{
-					padding: 16
+				maxWidth="sm"
+				style={{
+					paddingBottom: 16
 				}}
 			>
 				{/* The app title */}
@@ -127,7 +121,7 @@ const LoginPage = () => {
 					This software is under MIT license. For more information go to <a href="#">trackless.ga</a>
 				</Typography>
 			</Container>
-		</>
+		</PageFade>
 	)
 }
 

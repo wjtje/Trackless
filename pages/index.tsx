@@ -4,6 +4,7 @@ import Router from 'next/router'
 import {exportPageAccess} from './export'
 import {Button, createStyles, makeStyles, Typography} from '@material-ui/core'
 import {ServerContext} from './_app'
+import PageFade from '../components/page-fade'
 
 // Custom styles used by this page
 const useStyles = makeStyles(theme => createStyles({
@@ -35,27 +36,29 @@ const LoadingPage = () => {
 	}, [accessList])
 
 	return (
-		<div className={classes.container}>
-			<div>
-				<Typography variant="h5" className={classes.loadingText}>Trackless Beta is loading</Typography>
-				<Typography variant="body2" className={classes.loadingText}>If the app get&apos;s stuck here then you could reset the app</Typography>
-				<ServerContext.Consumer>
-					{value => (
-						<div className={classes.buttonHolder}>
-							<Button
-								onClick={() => {
-									// Clear the localstorage and reload the page
-									value.setApiKey(_ => '')
-									value.setServerUrl(_ => '')
-								}}
-							>
-								Reset app
-							</Button>
-						</div>
-					)}
-				</ServerContext.Consumer>
+		<PageFade>
+			<div className={classes.container}>
+				<div>
+					<Typography variant="h5" className={classes.loadingText}>Trackless Beta is loading</Typography>
+					<Typography variant="body2" className={classes.loadingText}>If the app get&apos;s stuck here then you could reset the app</Typography>
+					<ServerContext.Consumer>
+						{value => (
+							<div className={classes.buttonHolder}>
+								<Button
+									onClick={() => {
+										// Clear the localstorage and reload the page
+										value.setApiKey(_ => '')
+										value.setServerUrl(_ => '')
+									}}
+								>
+									Reset app
+								</Button>
+							</div>
+						)}
+					</ServerContext.Consumer>
+				</div>
 			</div>
-		</div>
+		</PageFade>
 	)
 }
 
