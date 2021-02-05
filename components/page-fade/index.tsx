@@ -2,12 +2,19 @@ import {createStyles, makeStyles} from '@material-ui/core'
 import {motion} from 'framer-motion'
 import React from 'react'
 
+// Custom styles
 const useStyle = makeStyles(_ => createStyles({
-	defaultSizedContainer: {
+	// Make sure the component takes all the available height
+	root: {
 		height: '100%'
 	}
 }))
 
+/**
+ * This animation is used to fade pages in and out
+ *
+ * The only thing you need to do is wrap your page in this component
+ */
 const PageFade = ({children}: {
 	children: JSX.Element | JSX.Element[];
 }) => {
@@ -15,11 +22,11 @@ const PageFade = ({children}: {
 
 	return (
 		<motion.div
-			className={classes.defaultSizedContainer}
+			className={classes.root}
 			initial="hidden"
 			animate="visable"
 			exit="hidden"
-			// Define the animation
+			// Define the states
 			variants={{
 				hidden: {
 					opacity: 0
@@ -28,6 +35,7 @@ const PageFade = ({children}: {
 					opacity: 1
 				}
 			}}
+			// Custom transistions
 			transition={{
 				hidden: {
 					duration: 0.195,
