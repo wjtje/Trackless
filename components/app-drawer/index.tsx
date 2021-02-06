@@ -12,17 +12,13 @@ import {useRouter} from 'next/router'
 import Link from 'next/link'
 import {accountPageAccess} from '../../pages/account'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
+import {locationPageAccess} from '../../pages/location'
+import LocationOnIcon from '@material-ui/icons/LocationOn'
+import AppDrawerItem from './item'
 
 export const drawerWidth = 240
 
-/**
- * Custom styles used by and for the appDrawer
- *
- * Give the root of the page the root class.
- * The appBar the appBar class.
- * And the menuButton the menuButton class.
- */
-export const useDrawerStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
 		drawer: {
 			[theme.breakpoints.up('md')]: {
@@ -39,26 +35,6 @@ export const useDrawerStyles = makeStyles((theme: Theme) =>
 		},
 		drawerPaper: {
 			width: drawerWidth
-		},
-		// Styles for the list items
-		listItem: {
-			height: 40,
-			margin: '4px 8px',
-			padding: '0px 8px',
-			width: 'auto',
-			borderRadius: '4px',
-			transitionTimingFunction: 'ease',
-			transition: 'background 0.5s'
-		},
-		listItemActive: {
-			background: 'rgba(4,75,127,.12)',
-			color: '#044b7f',
-			'&:hover': {
-				background: 'rgba(4,75,127,.24)'
-			}
-		},
-		listItemIconActive: {
-			fill: '#044b7f'
 		}
 	})
 )
@@ -73,7 +49,7 @@ interface Props {
  * It will automaticly show and hide option based on the users access
  */
 const AppDrawer = (props: Props) => {
-	const classes = useDrawerStyles()
+	const classes = useStyles()
 	const theme = useTheme()
 	const {accessList} = useAccess()
 	const router = useRouter()
@@ -88,43 +64,32 @@ const AppDrawer = (props: Props) => {
 				<Typography variant="h6">Main menu</Typography>
 			</div>
 			<List>
-				{exportPageAccess.every(value => accessList.includes(value)) ? (
-					<Link href="/export">
-						<ListItem
-							button
-							className={clsns(classes.listItem, {
-								[classes.listItemActive]: router.pathname === '/export'
-							})}
-							onClick={props.onDrawerClose}
-						>
-							<ListItemIcon>
-								<ImportExportIcon className={clsns({
-									[classes.listItemIconActive]: router.pathname === '/export'
-								})}/>
-							</ListItemIcon>
-							<ListItemText primary="Export"/>
-						</ListItem>
-					</Link>
-				) : null}
+				<AppDrawerItem
+					accessList={accessList}
+					pageList={exportPageAccess}
+					url="/export"
+					name="Export"
+					Icon={ImportExportIcon}
+					onClick={props.onDrawerClose}
+				/>
 
-				{accountPageAccess.every(value => accessList.includes(value)) ? (
-					<Link href="/account">
-						<ListItem
-							button
-							className={clsns(classes.listItem, {
-								[classes.listItemActive]: router.pathname === '/account'
-							})}
-							onClick={props.onDrawerClose}
-						>
-							<ListItemIcon>
-								<AccountBoxIcon className={clsns({
-									[classes.listItemIconActive]: router.pathname === '/account'
-								})}/>
-							</ListItemIcon>
-							<ListItemText primary="Account"/>
-						</ListItem>
-					</Link>
-				) : null}
+				<AppDrawerItem
+					accessList={accessList}
+					pageList={locationPageAccess}
+					url="/location"
+					name="Location"
+					Icon={LocationOnIcon}
+					onClick={props.onDrawerClose}
+				/>
+
+				<AppDrawerItem
+					accessList={accessList}
+					pageList={accountPageAccess}
+					url="/account"
+					name="Account"
+					Icon={AccountBoxIcon}
+					onClick={props.onDrawerClose}
+				/>
 			</List>
 		</div>
 	)
