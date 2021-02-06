@@ -1,4 +1,4 @@
-import {Button, createStyles, makeStyles, TextField, Typography} from '@material-ui/core'
+import {Button, createStyles, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, makeStyles, TextField, Typography} from '@material-ui/core'
 import {red} from '@material-ui/core/colors'
 import {useSnackbar} from 'notistack'
 import React, {useState} from 'react'
@@ -37,7 +37,7 @@ interface props {
 	/**
 	 * This defines the location that will be edited
 	 */
-	editLocation?: TracklessLocation;
+	editLocation?: TracklessLocation | undefined;
 }
 
 /**
@@ -49,6 +49,7 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 	const {addLocation} = useLocations()
 
 	const [showWarning, setShowWarning] = useState(false)
+	const [showDialog, setShowDialog] = useState(false)
 
 	const [place, setPlace] = useState('')
 	const [name, setName] = useState('')
@@ -75,7 +76,23 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 	 * This event is fired when the user closes the location without saving
 	 */
 	const onExit = () => {
-		onClose()
+		// Check for unsaved changes
+		if (editLocation === undefined && (
+			place !== '' ||
+			name !== '' ||
+			id !== ''
+		)) {
+			setShowDialog(true)
+		} else if (editLocation !== undefined && (
+			editLocation?.place !== place ||
+			editLocation?.name !== name ||
+			editLocation?.id !== id
+		)) {
+			setShowDialog(true)
+		} else {
+			// No onsaved changes
+			onClose()
+		}
 	}
 
 	/**
@@ -136,6 +153,32 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 					{editLocation === undefined ? null : <Button color="secondary" onClick={onDelete}>Delete</Button>}
 					<Button color="primary" onClick={onSave}>Save</Button>
 				</div>
+
+				{/* Warning dialog */}
+				<Dialog
+					open={showDialog}
+				>
+					<DialogTitle>Unsaved changes</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							There are unsaved changed on this page
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+						<Button
+							onClick={onClose}
+						>
+							Leave
+						</Button>
+						<Button
+							onClick={() => {
+								setShowDialog(false)
+							}}
+						>
+							Stay
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</div>
 		</PageFade>
 	)
