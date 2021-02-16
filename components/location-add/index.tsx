@@ -1,7 +1,7 @@
-import {Button, createStyles, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, makeStyles, TextField, Typography} from '@material-ui/core'
+import {Button, createStyles, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, makeStyles, MenuItem, TextField, Typography} from '@material-ui/core'
 import {red} from '@material-ui/core/colors'
 import {useSnackbar} from 'notistack'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import TracklessLocation from '../../scripts/classes/trackless-location'
 import useLocations from '../../scripts/hooks/use-locations'
 import PageFade from '../page-fade'
@@ -9,9 +9,8 @@ import PageFade from '../page-fade'
 const useStyles = makeStyles(theme =>
 	createStyles({
 		locationDetailContainer: {
-			width: '50%',
+			width: '100%',
 			height: '100%',
-			float: 'right',
 			padding: theme.spacing(2),
 			[theme.breakpoints.down('sm')]: {
 				width: '100%'
@@ -37,7 +36,7 @@ interface props {
 	/**
 	 * This defines the location that will be edited
 	 */
-	editLocation?: TracklessLocation | undefined;
+	editLocation?: TracklessLocation | null;
 }
 
 /**
@@ -46,14 +45,26 @@ interface props {
 const LocationAdd = ({onClose, editLocation}: props) => {
 	const classes = useStyles()
 	const {enqueueSnackbar} = useSnackbar()
-	const {addLocation} = useLocations()
+	const {addLocation, updateLocation, deleteLocation} = useLocations(true)
 
 	const [showWarning, setShowWarning] = useState(false)
 	const [showDialog, setShowDialog] = useState(false)
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
 	const [place, setPlace] = useState('')
 	const [name, setName] = useState('')
 	const [id, setId] = useState('')
+	const [hidden, setHidden] = useState(0)
+
+	// Update the states when the editLocation changes
+	useEffect(() => {
+		if (editLocation !== null) {
+			setPlace(editLocation.place)
+			setName(editLocation.name)
+			setId(editLocation.id)
+			setHidden(editLocation.hidden)
+		}
+	}, [editLocation])
 
 	/**
 	 * This event is fired when the users saves a location
@@ -65,10 +76,24 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 				variant: 'warning'
 			})
 			setShowWarning(true)
-		} else {
+		} else if ((editLocation === null)) {
 			// Save the data
-			addLocation(name, place, id)
-			onClose()
+			void addLocation(place, name, id)
+				.then(() => {
+					onClose()
+				})
+		} else {
+			// Update the data
+			void updateLocation({
+				locationID: editLocation.locationID,
+				place,
+				name,
+				id,
+				hidden
+			})
+				.then(() => {
+					onClose()
+				})
 		}
 	}
 
@@ -77,16 +102,17 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 	 */
 	const onExit = () => {
 		// Check for unsaved changes
-		if (editLocation === undefined && (
+		if (editLocation === null && (
 			place !== '' ||
 			name !== '' ||
 			id !== ''
 		)) {
 			setShowDialog(true)
-		} else if (editLocation !== undefined && (
+		} else if (editLocation !== null && (
 			editLocation?.place !== place ||
 			editLocation?.name !== name ||
-			editLocation?.id !== id
+			editLocation?.id !== id ||
+			editLocation?.hidden !== hidden
 		)) {
 			setShowDialog(true)
 		} else {
@@ -99,7 +125,14 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 	 * This event is fired when the user deletes a location
 	 */
 	const onDelete = () => {
-		onClose()
+		// Close the dialog
+		setShowDeleteDialog(false)
+
+		// Delete the location
+		void deleteLocation(editLocation.locationID)
+			.then(() => {
+				onClose()
+			})
 	}
 
 	return (
@@ -108,7 +141,7 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 				className={classes.locationDetailContainer}
 			>
 				<Typography variant="h5">
-					{editLocation === undefined ? 'Add location' : 'Edit location'}
+					{editLocation === null ? 'Add location' : 'Edit location'}
 				</Typography>
 
 				<TextField
@@ -147,14 +180,47 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 						setId(event.target.value)
 					}}
 				/>
+				{
+					editLocation === null ? null : (
+						<TextField
+							fullWidth
+							required
+							select
+							className={classes.textInput}
+							label="Visibility"
+							variant="outlined"
+							value={hidden}
+							onChange={event => {
+								setHidden(Number(event.target.value))
+							}}
+						>
+							<MenuItem value={0}>
+								Visable
+							</MenuItem>
+							<MenuItem value={1}>
+								Hidden
+							</MenuItem>
+						</TextField>
+					)
+				}
 
 				<div className={classes.actionButtons}>
 					<Button onClick={onExit}>Exit</Button>
-					{editLocation === undefined ? null : <Button color="secondary" onClick={onDelete}>Delete</Button>}
+					{
+						editLocation === null ?
+							null :
+							<Button
+								color="secondary" onClick={() => {
+									setShowDeleteDialog(true)
+								}}
+							>
+								Delete
+							</Button>
+					}
 					<Button color="primary" onClick={onSave}>Save</Button>
 				</div>
 
-				{/* Warning dialog */}
+				{/* Warning dialogs */}
 				<Dialog
 					open={showDialog}
 				>
@@ -173,6 +239,32 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 						<Button
 							onClick={() => {
 								setShowDialog(false)
+							}}
+						>
+							Stay
+						</Button>
+					</DialogActions>
+				</Dialog>
+
+				<Dialog
+					open={showDeleteDialog}
+				>
+					<DialogTitle>Delete a location</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							You are at the point of deleting a location.
+							This cann&apos;t be undone.
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+						<Button
+							onClick={onDelete}
+						>
+							Delete
+						</Button>
+						<Button
+							onClick={() => {
+								setShowDeleteDialog(false)
 							}}
 						>
 							Stay

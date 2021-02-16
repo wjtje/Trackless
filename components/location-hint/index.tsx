@@ -6,9 +6,8 @@ import PageFade from '../page-fade'
 const useStyles = makeStyles(theme =>
 	createStyles({
 		locationDetailContainer: {
-			width: '50%',
+			width: '100%',
 			height: '100%',
-			float: 'right',
 			padding: theme.spacing(2),
 			[theme.breakpoints.down('sm')]: {
 				display: 'none !important'

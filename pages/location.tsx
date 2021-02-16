@@ -36,10 +36,19 @@ const useStyles = makeStyles(theme =>
 				width: '100%'
 			}
 		},
+		locationListDetail: {
+			height: '100%',
+			width: '50%',
+			float: 'right',
+			overflowY: 'auto'
+		},
 		locationListContainerHidden: {
 			[theme.breakpoints.down('sm')]: {
 				display: 'none'
 			}
+		},
+		listItemHidden: {
+			color: '#E25141'
 		}
 	})
 )
@@ -50,7 +59,7 @@ const useStyles = makeStyles(theme =>
 const Location = () => {
 	const classes = useStyles()
 	const isPresent = useIsPresent()
-	const {locations} = useLocations()
+	const {locations} = useLocations(true)
 
 	const [currentLocation, setCurrentLocation] = useState<TracklessLocation>(null)
 	const [addLocation, setAddLocation] = useState(false)
@@ -77,29 +86,41 @@ const Location = () => {
 							<ListItem
 								key={location.locationID}
 								button
+								onClick={() => {
+									setCurrentLocation(location)
+								}}
 							>
-								<ListItemText primary={location.fullName} secondary={location.id}/>
+								<ListItemText
+									className={clsns({[classes.listItemHidden]: location.hidden === 1})}
+									primary={location.fullName}
+									secondary={location.id}
+								/>
 							</ListItem>
 						))}
 					</List>
 				</div>
 
 				{/* Show the hint or the edit dialog to the user */}
-				<AnimatePresence exitBeforeEnter>
-					{
-						isEditing ?
-							<LocationAdd
-								key="add"
-								onClose={() => {
-									setAddLocation(false)
-								}}
-							/> :
-							<LocationHint key="hint"/>
-					}
-				</AnimatePresence>
+				<div className={classes.locationListDetail}>
+					<AnimatePresence exitBeforeEnter>
+						{
+							isEditing ?
+								<LocationAdd
+									key="add"
+									editLocation={currentLocation}
+									onClose={() => {
+										// Hide the dialog
+										setAddLocation(false)
+										setCurrentLocation(null)
+									}}
+								/> :
+								<LocationHint key="hint"/>
+						}
+					</AnimatePresence>
+				</div>
 			</PageFade>
 
-			<Zoom in={isPresent && !addLocation}>
+			<Zoom in={isPresent && !isEditing}>
 				<Fab
 					className={classes.fab}
 					color="secondary"
