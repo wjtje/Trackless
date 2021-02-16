@@ -1,11 +1,13 @@
-import {createStyles, Fab, Grid, List, ListItem, ListItemText, makeStyles, Theme, Typography, Zoom} from '@material-ui/core'
+import {Button, createStyles, Fab, List, ListItem, ListItemText, makeStyles, Theme, Typography, Zoom} from '@material-ui/core'
 import React, {useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
 import TracklessUser from '../scripts/classes/trackless-user'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PageFade from '../components/page-fade'
 import {useIsPresent} from 'framer-motion'
-import clsns from 'classnames'
+import DetailPage from '../components/detail-page'
+import ListPane from '../components/detail-page/list-pane'
+import DetailPane from '../components/detail-page/detail-pane'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -15,9 +17,6 @@ export const exportPageAccess = [
 // Custom styles used on this page
 const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
-		hidden: {
-			display: 'none'
-		},
 		fab: {
 			position: 'absolute',
 			bottom: theme.spacing(2),
@@ -26,32 +25,6 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		extendedIcon: {
 			marginRight: theme.spacing(1)
-		},
-		userListContainer: {
-			width: '50%',
-			height: '100%',
-			float: 'left',
-			padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-			overflowY: 'scroll',
-			[theme.breakpoints.down('sm')]: {
-				width: '100%'
-			}
-		},
-		userDetailContainer: {
-			width: '50%',
-			height: '100%',
-			float: 'right',
-			[theme.breakpoints.down('sm')]: {
-				display: 'none !important'
-			}
-		},
-		userDetailEmptyContainer: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center'
-		},
-		emptyText: {
-			textAlign: 'center'
 		}
 	})
 )
@@ -69,36 +42,41 @@ const Export = () => {
 	return (
 		<>
 			<PageFade>
-				<div className={classes.userListContainer}>
-					<List>
-						{users?.map(user => (
-							<ListItem
-								key={user.userID}
-								button
-							>
-								<ListItemText primary={user.fullname} secondary="{hours} recorded last week"/>
-							</ListItem>
-						))}
-					</List>
-				</div>
-
-				<div
-					className={clsns(
-						classes.userDetailContainer,
-						{
-							[classes.userDetailEmptyContainer]: selectedUser === null
-						}
-					)}
+				<DetailPage
+					hintTitle="No user selected"
+					hintSubtext="Select a user from the list on the left or download all users at once"
+					detailActive={selectedUser !== null}
 				>
-					<div>
-						<Typography variant="h5" className={classes.emptyText}>
-							No user selected
-						</Typography>
-						<Typography variant="body2" className={classes.emptyText}>
-							Select a user from the list on the left or download all users at once
-						</Typography>
-					</div>
-				</div>
+					<ListPane>
+						{/* List of user on the system */}
+						<List>
+							{users?.map((user: TracklessUser) => (
+								<ListItem
+									key={user.userID}
+									button
+									onClick={() => {
+										setSelectedUser(user)
+									}}
+								>
+									<ListItemText primary={user.fullname} secondary="{hours} recorded last week"/>
+								</ListItem>
+							))}
+						</List>
+					</ListPane>
+					<DetailPane>
+						{/* Show information about the selected user */}
+						<PageFade>
+							<Typography>{selectedUser?.fullname} - {selectedUser?.userID}</Typography>
+							<Button
+								onClick={() => {
+									setSelectedUser(null)
+								}}
+							>
+								Close
+							</Button>
+						</PageFade>
+					</DetailPane>
+				</DetailPage>
 			</PageFade>
 
 			<Zoom in={isPresent}>

@@ -6,8 +6,10 @@ import PageFade from '../components/page-fade'
 import useLocations from '../scripts/hooks/use-locations'
 import clsns from 'classnames'
 import TracklessLocation from '../scripts/classes/trackless-location'
-import LocationHint from '../components/location-hint'
 import LocationAdd from '../components/location-add'
+import DetailPage from '../components/detail-page'
+import DetailPane from '../components/detail-page/detail-pane'
+import ListPane from '../components/detail-page/list-pane'
 
 export const locationPageAccess = [
 	'trackless.location.read',
@@ -69,55 +71,47 @@ const Location = () => {
 	 */
 	const isEditing = addLocation || currentLocation !== null
 
+	console.log(`Location page edit: ${String(isEditing)}`)
+
 	return (
 		<>
 			<PageFade>
-				{/* Location list */}
-				<div
-					className={clsns(
-						classes.locationListContainer,
-						{
-							[classes.locationListContainerHidden]: isEditing
-						}
-					)}
+				<DetailPage
+					hintTitle="No location selected"
+					hintSubtext="Select a location from the list or add a new one"
+					detailActive={isEditing}
 				>
-					<List>
-						{locations?.map(location => (
-							<ListItem
-								key={location.locationID}
-								button
-								onClick={() => {
-									setCurrentLocation(location)
-								}}
-							>
-								<ListItemText
-									className={clsns({[classes.listItemHidden]: location.hidden === 1})}
-									primary={location.fullName}
-									secondary={location.id}
-								/>
-							</ListItem>
-						))}
-					</List>
-				</div>
-
-				{/* Show the hint or the edit dialog to the user */}
-				<div className={classes.locationListDetail}>
-					<AnimatePresence exitBeforeEnter>
-						{
-							isEditing ?
-								<LocationAdd
-									key="add"
-									editLocation={currentLocation}
-									onClose={() => {
-										// Hide the dialog
-										setAddLocation(false)
-										setCurrentLocation(null)
+					<ListPane>
+						<List>
+							{locations?.map(location => (
+								<ListItem
+									key={location.locationID}
+									button
+									onClick={() => {
+										setCurrentLocation(location)
 									}}
-								/> :
-								<LocationHint key="hint"/>
-						}
-					</AnimatePresence>
-				</div>
+								>
+									<ListItemText
+										className={clsns({[classes.listItemHidden]: location.hidden === 1})}
+										primary={location.fullName}
+										secondary={location.id}
+									/>
+								</ListItem>
+							))}
+						</List>
+					</ListPane>
+					<DetailPane>
+						<LocationAdd
+							key="add"
+							editLocation={currentLocation}
+							onClose={() => {
+								// Hide the dialog
+								setAddLocation(false)
+								setCurrentLocation(null)
+							}}
+						/>
+					</DetailPane>
+				</DetailPage>
 			</PageFade>
 
 			<Zoom in={isPresent && !isEditing}>

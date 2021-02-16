@@ -232,7 +232,10 @@ const LocationAdd = ({onClose, editLocation}: props) => {
 					</DialogContent>
 					<DialogActions>
 						<Button
-							onClick={onClose}
+							onClick={() => {
+								onClose()
+								setShowDialog(false)
+							}}
 						>
 							Leave
 						</Button>
