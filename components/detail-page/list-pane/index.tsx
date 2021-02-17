@@ -44,8 +44,8 @@ const ListPane = ({children}: props) => {
 	return (
 		// Hide the List is you are on a small screen and the detailPane is active
 		onMobile && detailPage.detailActive ?
-			<motion.div exit={{opacity: 0}}/> : // This is for the AnimatePresence
-			<div className={clsns(classes.root, {[classes.hidden]: detailPage.detailActive})}>
+			<motion.div key="listPaneHidden" exit={{opacity: 0}}/> : // This is for the AnimatePresence
+			<div key="listPane" className={clsns(classes.root, {[classes.hidden]: detailPage.detailActive})}>
 				<PageFade>
 					{children}
 				</PageFade>

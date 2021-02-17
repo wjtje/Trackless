@@ -40,7 +40,7 @@ const DetailPane = ({children}: props) => {
 	const onMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
 	return (
-		<div className={clsns(classes.root, {[classes.hidden]: !detailPage.detailActive})}>
+		<div key="detailPane" className={clsns(classes.root, {[classes.hidden]: !detailPage.detailActive})}>
 			{/*
 				If we are on mobile and the detailPane is active, show it
 				else hide is
