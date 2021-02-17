@@ -3,6 +3,7 @@ import React, {useContext} from 'react'
 import {DetailPageContext} from '..'
 import DetailPaneHint from '../detail-pane-hint'
 import clsns from 'classnames'
+import {AnimatePresence} from 'framer-motion'
 
 interface props {
 	children: JSX.Element;
@@ -48,16 +49,19 @@ const DetailPane = ({children}: props) => {
 				If we are on pc and the detailPane is active, show it
 				else show the hint
 			*/}
-			{
-				onMobile && detailPage.detailActive ?
-					children :
-					(detailPage.detailActive ?
+			<AnimatePresence exitBeforeEnter>
+				{
+					onMobile && detailPage.detailActive ?
 						children :
-						<DetailPaneHint
-							title={detailPage.hintTitle}
-							subtext={detailPage.hintSubtext}
-						/>)
-			}
+						(detailPage.detailActive ?
+							children :
+							<DetailPaneHint
+								key="detailPaneHint"
+								title={detailPage.hintTitle}
+								subtext={detailPage.hintSubtext}
+							/>)
+				}
+			</AnimatePresence>
 		</div>
 	)
 }

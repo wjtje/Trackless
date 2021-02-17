@@ -3,7 +3,7 @@ import React, {useContext} from 'react'
 import {DetailPageContext} from '..'
 import clsns from 'classnames'
 import PageFade from '../../page-fade'
-import {motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'framer-motion'
 
 interface props {
 	children: JSX.Element;
@@ -42,14 +42,18 @@ const ListPane = ({children}: props) => {
 	const onMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
 	return (
-		// Hide the List is you are on a small screen and the detailPane is active
-		onMobile && detailPage.detailActive ?
-			<motion.div key="listPaneHidden" exit={{opacity: 0}}/> : // This is for the AnimatePresence
-			<div key="listPane" className={clsns(classes.root, {[classes.hidden]: detailPage.detailActive})}>
-				<PageFade>
-					{children}
-				</PageFade>
-			</div>
+		<AnimatePresence exitBeforeEnter>
+			{
+				// Hide the List is you are on a small screen and the detailPane is active
+				onMobile && detailPage.detailActive ?
+					<motion.div key="listPaneHidden" exit={{opacity: 0}}/> : // This is for the AnimatePresence
+					<div key="listPane" className={clsns(classes.root, {[classes.hidden]: detailPage.detailActive})}>
+						<PageFade>
+							{children}
+						</PageFade>
+					</div>
+			}
+		</AnimatePresence>
 	)
 }
 
