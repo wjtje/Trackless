@@ -1,6 +1,6 @@
-import {Button, createStyles, Fab, List, ListItem, ListItemText, makeStyles, TextField, Typography, Zoom} from '@material-ui/core'
+import {createStyles, Fab, List, ListItem, ListItemText, makeStyles, Zoom} from '@material-ui/core'
 import {Add as AddIcon} from '@material-ui/icons'
-import {AnimatePresence, useIsPresent} from 'framer-motion'
+import {useIsPresent} from 'framer-motion'
 import React, {useState} from 'react'
 import PageFade from '../components/page-fade'
 import useLocations from '../scripts/hooks/use-locations'
@@ -13,7 +13,9 @@ import ListPane from '../components/detail-page/list-pane'
 
 export const locationPageAccess = [
 	'trackless.location.read',
-	'trackless.location.create'
+	'trackless.location.create',
+	'trackless.location.edit',
+	'trackless.location.remove'
 ]
 
 // Custom styles used on this page
