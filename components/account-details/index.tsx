@@ -35,57 +35,60 @@ const AccountDetails = ({account, isLoading}: props) => {
 				Your details
 			</Typography>
 			<table className={classes.table}>
-				<tr>
-					<th className={classes.tableHeader}>
-						<Typography>
-							Firstname
-						</Typography>
-					</th>
-					<td>
-						<Typography>
-							{isLoading ? <Skeleton width={150}/> : account?.firstname}
-						</Typography>
-					</td>
-				</tr>
+				<tbody>
 
-				<tr>
-					<th className={classes.tableHeader}>
-						<Typography>
-							Lastname
-						</Typography>
-					</th>
-					<td>
-						<Typography>
-							{isLoading ? <Skeleton width={150}/> : account?.lastname}
-						</Typography>
-					</td>
-				</tr>
+					<tr>
+						<th className={classes.tableHeader}>
+							<Typography>
+								Firstname
+							</Typography>
+						</th>
+						<td>
+							<Typography>
+								{isLoading ? <Skeleton width={150}/> : account?.firstname}
+							</Typography>
+						</td>
+					</tr>
 
-				<tr>
-					<th className={classes.tableHeader}>
-						<Typography>
-							Username
-						</Typography>
-					</th>
-					<td>
-						<Typography>
-							{isLoading ? <Skeleton width={150}/> : account?.username}
-						</Typography>
-					</td>
-				</tr>
+					<tr>
+						<th className={classes.tableHeader}>
+							<Typography>
+								Lastname
+							</Typography>
+						</th>
+						<td>
+							<Typography>
+								{isLoading ? <Skeleton width={150}/> : account?.lastname}
+							</Typography>
+						</td>
+					</tr>
 
-				<tr>
-					<th className={classes.tableHeader}>
-						<Typography>
-							Group
-						</Typography>
-					</th>
-					<td>
-						<Typography>
-							{isLoading ? <Skeleton width={150}/> : account?.groupName}
-						</Typography>
-					</td>
-				</tr>
+					<tr>
+						<th className={classes.tableHeader}>
+							<Typography>
+								Username
+							</Typography>
+						</th>
+						<td>
+							<Typography>
+								{isLoading ? <Skeleton width={150}/> : account?.username}
+							</Typography>
+						</td>
+					</tr>
+
+					<tr>
+						<th className={classes.tableHeader}>
+							<Typography>
+								Group
+							</Typography>
+						</th>
+						<td>
+							<Typography>
+								{isLoading ? <Skeleton width={150}/> : account?.groupName}
+							</Typography>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</>
 	)
