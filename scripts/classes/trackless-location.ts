@@ -33,14 +33,24 @@ class TracklessLocation {
 	 */
 	time: number
 
-	constructor(location) {
-		// Create the location object
-		this.locationID = location.locationID
-		this.hidden = location.hidden
-		this.name = location.name
-		this.place = location.place
-		this.id = location.id
-		this.time = location.time
+	constructor(location: Record<string, any>) {
+		// Define the properties and there types
+		const properties = [
+			{name: 'locationID', type: 'number'},
+			{name: 'hidden', type: 'number'},
+			{name: 'name', type: 'string'},
+			{name: 'place', type: 'string'},
+			{name: 'id', type: 'string'},
+			{name: 'time', type: 'number'}
+		]
+
+		// Test all the properties
+		properties.forEach(property => {
+			console.assert(typeof location[property.name] === property.type, {property, location})
+
+			// Assign the property
+			this[property.name] = location[property.name]
+		})
 	}
 
 	/**
