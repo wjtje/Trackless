@@ -1,7 +1,6 @@
-import {Drawer, List, ListItem, ListItemText} from '@material-ui/core'
+import {Drawer, List} from '@material-ui/core'
 import React from 'react'
 import Hidden from '@material-ui/core/Hidden'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
 import clsns from 'classnames'
 import Typography from '@material-ui/core/Typography'
 import {makeStyles, useTheme, Theme, createStyles} from '@material-ui/core/styles'
@@ -9,12 +8,13 @@ import useAccess from '../../scripts/hooks/use-access'
 import {exportPageAccess} from '../../pages/export'
 import ImportExportIcon from '@material-ui/icons/ImportExport'
 import {useRouter} from 'next/router'
-import Link from 'next/link'
 import {accountPageAccess} from '../../pages/account'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import {locationPageAccess} from '../../pages/location'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
 import AppDrawerItem from './item'
+import {userPageAccess} from '../../pages/users'
+import PersonIcon from '@material-ui/icons/Person'
 
 export const drawerWidth = 240
 
@@ -79,6 +79,14 @@ const AppDrawer = (props: Props) => {
 					url="/location"
 					name="Location"
 					Icon={LocationOnIcon}
+					onClick={props.onDrawerClose}
+				/>
+				<AppDrawerItem
+					accessList={accessList}
+					pageList={userPageAccess}
+					url="/users"
+					name="Users"
+					Icon={PersonIcon}
 					onClick={props.onDrawerClose}
 				/>
 
