@@ -8,6 +8,7 @@ import PageFade from '../components/page-fade'
 import TracklessUser from '../scripts/classes/trackless-user'
 import useUsers from '../scripts/hooks/use-users'
 import {Add as AddIcon} from '@material-ui/icons'
+import SearchableList from '../components/searchable-list'
 
 export const userPageAccess = [
 	'trackless.user.readAll',
@@ -55,19 +56,15 @@ const User = () => {
 				detailActive={detailActive}
 			>
 				<ListPane>
-					<List>
-						{users?.map(user => (
-							<ListItem
-								key={user.userID}
-								button
-								onClick={() => {
-									setCurrentSelectedUser(user)
-								}}
-							>
-								<ListItemText primary={user.fullname} secondary={user.username}/>
-							</ListItem>
-						))}
-					</List>
+					<SearchableList<TracklessUser>
+						list={users}
+						listProperties={{
+							key: 'userID',
+							primaryText: 'fullname',
+							secondaryText: 'username'
+						}}
+						onClick={setCurrentSelectedUser}
+					/>
 				</ListPane>
 				<DetailPane>
 					<p>{currentSelectedUser?.fullname ?? 'Adding user'}</p>
