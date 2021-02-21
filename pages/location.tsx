@@ -10,6 +10,7 @@ import LocationAdd from '../components/location-add'
 import DetailPage from '../components/detail-page'
 import DetailPane from '../components/detail-page/detail-pane'
 import ListPane from '../components/detail-page/list-pane'
+import SearchableList from '../components/searchable-list'
 
 export const locationPageAccess = [
 	'trackless.location.read',
@@ -84,23 +85,16 @@ const Location = () => {
 					detailActive={isEditing}
 				>
 					<ListPane>
-						<List>
-							{locations?.map(location => (
-								<ListItem
-									key={location.locationID}
-									button
-									onClick={() => {
-										setCurrentLocation(location)
-									}}
-								>
-									<ListItemText
-										className={clsns({[classes.listItemHidden]: location.hidden === 1})}
-										primary={location.fullName}
-										secondary={location.id}
-									/>
-								</ListItem>
-							))}
-						</List>
+						<SearchableList<TracklessLocation>
+							list={locations}
+							listProperties={{
+								key: 'locationID',
+								primaryText: 'fullName',
+								secondaryText: 'id'
+							}}
+							className={item => clsns({[classes.listItemHidden]: item.hidden === 1})}
+							onClick={setCurrentLocation}
+						/>
 					</ListPane>
 					<DetailPane>
 						<LocationAdd

@@ -8,6 +8,7 @@ import {useIsPresent} from 'framer-motion'
 import DetailPage from '../components/detail-page'
 import ListPane from '../components/detail-page/list-pane'
 import DetailPane from '../components/detail-page/detail-pane'
+import SearchableList from '../components/searchable-list'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -49,19 +50,15 @@ const Export = () => {
 				>
 					<ListPane>
 						{/* List of user on the system */}
-						<List>
-							{users?.map((user: TracklessUser) => (
-								<ListItem
-									key={user.userID}
-									button
-									onClick={() => {
-										setSelectedUser(user)
-									}}
-								>
-									<ListItemText primary={user.fullname} secondary="{hours} recorded last week"/>
-								</ListItem>
-							))}
-						</List>
+						<SearchableList<TracklessUser>
+							list={users}
+							listProperties={{
+								key: 'userID',
+								primaryText: 'fullname',
+								secondaryText: () => '{hours} recorded last week'
+							}}
+							onClick={setSelectedUser}
+						/>
 					</ListPane>
 					<DetailPane>
 						{/* Show information about the selected user */}
