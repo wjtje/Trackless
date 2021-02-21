@@ -55,7 +55,7 @@ const Export = () => {
 							listProperties={{
 								key: 'userID',
 								primaryText: 'fullname',
-								secondaryText: () => '{hours} recoded last week'
+								secondaryText: () => '{hours} recorded last week'
 							}}
 							onClick={setSelectedUser}
 						/>
