@@ -9,6 +9,7 @@ import TracklessUser from '../scripts/classes/trackless-user'
 import useUsers from '../scripts/hooks/use-users'
 import {Add as AddIcon} from '@material-ui/icons'
 import SearchableList from '../components/searchable-list'
+import DetailObject from '../components/detail-page/detail-object'
 
 export const userPageAccess = [
 	'trackless.user.readAll',
@@ -67,7 +68,27 @@ const User = () => {
 					/>
 				</ListPane>
 				<DetailPane>
-					<p>{currentSelectedUser?.fullname ?? 'Adding user'}</p>
+					<DetailObject
+						newProperties={{
+							firstname: {
+								label: 'Firstname',
+								type: 'string'
+							},
+							lastname: {
+								label: 'Lastname',
+								type: 'string'
+							},
+							username: {
+								label: 'Username',
+								type: 'string'
+							}
+						}}
+						editObject={currentSelectedUser}
+						onClose={() => {
+							setIsAddingUser(false)
+							setCurrentSelectedUser(null)
+						}}
+					/>
 				</DetailPane>
 			</DetailPage>
 
