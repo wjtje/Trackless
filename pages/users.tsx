@@ -1,4 +1,4 @@
-import {createStyles, Fab, List, ListItem, ListItemText, makeStyles, Zoom} from '@material-ui/core'
+import {createStyles, Fab, List, ListItem, ListItemText, makeStyles, MenuItem, Zoom} from '@material-ui/core'
 import {useIsPresent} from 'framer-motion'
 import React, {useState} from 'react'
 import DetailPage from '../components/detail-page'
@@ -10,6 +10,7 @@ import useUsers from '../scripts/hooks/use-users'
 import {Add as AddIcon} from '@material-ui/icons'
 import SearchableList from '../components/searchable-list'
 import DetailObject from '../components/detail-page/detail-object'
+import useGroups from '../scripts/hooks/use-group'
 
 export const userPageAccess = [
 	'trackless.user.readAll',
@@ -38,6 +39,7 @@ const useStyles = makeStyles(theme =>
  */
 const User = () => {
 	const {users} = useUsers()
+	const {groups} = useGroups()
 	const isPresent = useIsPresent()
 	const classes = useStyles()
 
@@ -69,7 +71,7 @@ const User = () => {
 				</ListPane>
 				<DetailPane>
 					<DetailObject
-						newProperties={{
+						properties={{
 							firstname: {
 								label: 'Firstname',
 								type: 'string'
@@ -81,6 +83,27 @@ const User = () => {
 							username: {
 								label: 'Username',
 								type: 'string'
+							},
+							groupID: {
+								label: 'Group',
+								menuItems: groups.map(
+									group => (
+										<MenuItem
+											key={group.groupID}
+											value={group.groupID}
+										>
+											{group.groupName}
+										</MenuItem>
+									)
+								)
+							},
+							password: {
+								label: 'Password',
+								type: 'password'
+							},
+							passwordRepeat: {
+								label: 'Repeat password',
+								type: 'password'
 							}
 						}}
 						editObject={currentSelectedUser}

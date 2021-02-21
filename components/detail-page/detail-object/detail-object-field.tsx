@@ -18,31 +18,37 @@ export interface detailObjectField {
 	/**
 	 * The type of the input field
 	 */
-	type: 'string' | 'number' | 'password';
+	type?: 'string' | 'number' | 'password';
+	menuItems?: JSX.Element[];
 }
 
 interface props {
 	label: string;
-	type: 'string' | 'number' | 'password';
+	type?: 'string' | 'number' | 'password';
+	menuItems?: JSX.Element[];
 	value: any;
 	onChange: (newValue: any) => void;
 }
 
-const DetailObjectField = ({label, type, value, onChange}: props) => {
+const DetailObjectField = ({label, type, value, onChange, menuItems = []}: props) => {
 	const classes = useStyles()
 
 	return (
 		<TextField
 			fullWidth
 			required
+			variant="outlined"
 			className={classes.textField}
 			label={label}
 			type={type}
+			select={menuItems?.length !== 0}
 			value={value}
 			onChange={event => {
 				onChange(event.target.value)
 			}}
-		/>
+		>
+			{menuItems}
+		</TextField>
 	)
 }
 

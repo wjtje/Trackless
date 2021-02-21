@@ -1,8 +1,8 @@
 import {Button, createStyles, makeStyles, Typography} from '@material-ui/core'
-import {SettingsInputAntennaTwoTone} from '@material-ui/icons'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import PageFade from '../../page-fade'
 import DetailObjectField, {detailObjectField} from './detail-object-field'
+import UnsavedDialog from './unsaved-dialog'
 
 const useStyles = makeStyles(theme =>
 	createStyles({
@@ -22,15 +22,15 @@ const useStyles = makeStyles(theme =>
 
 interface props {
 	/**
-	 * This event is fired every time the dialog needs to be closed
+	 * This function is run when the user clickes on the close button
 	 */
 	onClose: () => void;
 	/**
-	 * Properties required for create a new object
+	 * Properties for creating and editing objects
 	 */
-	newProperties: Record<string, detailObjectField>;
+	properties: Record<string, detailObjectField>;
 	/**
-	 * TODO
+	 * This is the object you want to edit
 	 */
 	editObject: any;
 }
@@ -38,19 +38,64 @@ interface props {
 /**
  * A detail object will handle the add and edit page of detail page
  *
- * You need te define the newProperties and editProperties
+ * You need te define the properties
  */
-const DetailObject = ({onClose, newProperties, editObject}: props) => {
+const DetailObject = ({onClose, properties, editObject}: props) => {
 	const classes = useStyles()
 	const [inputValues, setInputValues] = useState<Record<string, unknown>>(editObject ?? {})
 
+	// State for tracking changes made
+	const [madeChanges, setMadeChanges] = useState(false)
+
+	// States and function for unsavedDialog
+	const [unsavedDialogOpen, setUnsavedDialogOpen] = useState(false)
+	const unsavedDialogLeave = useRef(() => {
+		// This will hide the dialog and close the page
+		setUnsavedDialogOpen(false)
+		onClose()
+	})
+
+	const unsavedDialogStay = () => {
+		// This will hide the dialog
+		setUnsavedDialogOpen(false)
+	}
+
+	// UseEffect for updating the editObject
 	useEffect(
 		() => {
-			// TODO: check for unsaved changes
-			setInputValues(editObject ?? {})
+			if (madeChanges) {
+				// Change the leave function
+				unsavedDialogLeave.current = () => {
+					setUnsavedDialogOpen(false)
+					setInputValues(editObject ?? {})
+				}
+
+				// Show the dialog
+				setUnsavedDialogOpen(true)
+			} else {
+				setInputValues(editObject ?? {})
+			}
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[editObject]
 	)
+
+	// Functions for events
+	const onCloseBtn = () => {
+		if (madeChanges) {
+			// Change the leave function
+			unsavedDialogLeave.current = () => {
+				setUnsavedDialogOpen(false)
+				onClose()
+			}
+
+			// Show the dialog
+			setUnsavedDialogOpen(true)
+		} else {
+			setUnsavedDialogOpen(false)
+			onClose()
+		}
+	}
 
 	return (
 		<PageFade>
@@ -62,12 +107,14 @@ const DetailObject = ({onClose, newProperties, editObject}: props) => {
 
 				{/* The input fields */}
 				{
-					Object.entries(newProperties).map(([key, property]) => (
+					Object.entries(properties).map(([key, property]) => (
 						<DetailObjectField
 							key={key}
 							{...property}
 							value={inputValues[key] ?? ''}
 							onChange={value => {
+								// Save the changes made
+								setMadeChanges(true)
 								setInputValues({
 									...inputValues,
 									[key]: value
@@ -79,8 +126,15 @@ const DetailObject = ({onClose, newProperties, editObject}: props) => {
 
 				{/* Buttons */}
 				<div className={classes.actionButtons}>
-					<Button onClick={onClose}>Close</Button>
+					<Button onClick={onCloseBtn}>Close</Button>
 				</div>
+
+				{/* Dialogs */}
+				<UnsavedDialog
+					open={unsavedDialogOpen}
+					onLeave={unsavedDialogLeave.current}
+					onStay={unsavedDialogStay}
+				/>
 			</div>
 		</PageFade>
 	)
