@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme =>
 	})
 )
 
-export interface detailObjectField {
+export interface detailObjectField<propertiesKey extends string> {
 	/**
 	 * The label on the textfield shown to the user
 	 */
@@ -23,6 +23,10 @@ export interface detailObjectField {
 	 * Put your menuItems here if you want to display a list
 	 */
 	menuItems?: JSX.Element[];
+	/**
+	 * This function will check if the input value is valid
+	 */
+	inputCheck: (inputValues: Record<propertiesKey, unknown>) => boolean;
 }
 
 interface props {
@@ -31,9 +35,10 @@ interface props {
 	menuItems?: JSX.Element[];
 	value: any;
 	onChange: (newValue: any) => void;
+	error: boolean;
 }
 
-const DetailObjectField = ({label, type, value, onChange, menuItems = []}: props) => {
+const DetailObjectField = ({label, type, value, onChange, menuItems = [], error}: props) => {
 	const classes = useStyles()
 
 	return (
@@ -44,6 +49,7 @@ const DetailObjectField = ({label, type, value, onChange, menuItems = []}: props
 			className={classes.textField}
 			label={label}
 			type={type}
+			error={error}
 			select={menuItems?.length !== 0}
 			value={value}
 			onChange={event => {

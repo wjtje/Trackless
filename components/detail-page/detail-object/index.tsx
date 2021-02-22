@@ -21,33 +21,38 @@ const useStyles = makeStyles(theme =>
 	})
 )
 
-interface props<T> {
-	/**
-	 * This function is run when the user clickes on the close button
-	 */
-	onClose: () => void;
-	/**
-	 * Properties for creating and editing objects
-	 */
-	properties: Record<string, detailObjectField>;
-	/**
-	 * This is the object you want to edit
-	 */
-	editObject: T;
-	/**
-	 * This function is run when the object needs saving or updating
-	 */
-	onSave: (editObject: T, inputValues: any, saveType: 'save' | 'update') => void;
-}
-
 /**
  * A detail object will handle the add and edit page of detail page
  *
  * You need te define the properties
  */
-// eslint-disable-next-line @typescript-eslint/comma-dangle
-const DetailObject = <T,>({onClose, properties, editObject, onSave}: props<T>) => {
+const DetailObject = <editObjectType, propertiesKey extends string>(
+	{onClose, properties, editObject, onSave, isCheckError}: {
+		/**
+		 * This function is run when the user clickes on the close button
+		 */
+		onClose: () => void;
+		/**
+		 * Properties for creating and editing objects
+		 */
+		properties: Record<propertiesKey, detailObjectField<propertiesKey>>;
+		/**
+		 * This is the object you want to edit
+		 */
+		editObject: editObjectType;
+		/**
+		 * This function is run when the object needs saving or updating
+		 */
+		onSave: (editObject: editObjectType, inputValues: Record<propertiesKey, unknown>, saveType: 'save' | 'update') => void;
+		/**
+		 * This defines is the input error's are visable to the end user
+		 */
+		isCheckError: boolean;
+	}
+) => {
 	const classes = useStyles()
+
+	// State for all the input's
 	const [inputValues, setInputValues] = useState<Record<string, unknown>>(editObject ?? {})
 
 	// State for tracking changes made
@@ -113,10 +118,13 @@ const DetailObject = <T,>({onClose, properties, editObject, onSave}: props<T>) =
 
 				{/* The input fields */}
 				{
-					Object.entries(properties).map(([key, property]) => (
+					Object.entries<detailObjectField<propertiesKey>>(properties).map(([key, property]) => (
 						<DetailObjectField
 							key={key}
-							{...property}
+							label={property.label}
+							menuItems={property.menuItems}
+							type={property.type}
+							error={property.inputCheck(inputValues) && isCheckError}
 							value={inputValues[key] ?? ''}
 							onChange={value => {
 								// Save the changes made
@@ -135,7 +143,11 @@ const DetailObject = <T,>({onClose, properties, editObject, onSave}: props<T>) =
 					<Button onClick={onCloseBtn}>Close</Button>
 					<Button
 						onClick={() => {
-							onSave(editObject, inputValues, 'save')
+							if (editObject === null) {
+								onSave(editObject, inputValues, 'save')
+							} else {
+								onSave(editObject, inputValues, 'update')
+							}
 						}}
 					>
 						Save

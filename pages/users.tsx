@@ -11,6 +11,9 @@ import {Add as AddIcon} from '@material-ui/icons'
 import SearchableList from '../components/searchable-list'
 import DetailObject from '../components/detail-page/detail-object'
 import useGroups from '../scripts/hooks/use-group'
+import {inputValueCheckString} from '../components/detail-page/detail-object/input-value-check'
+import {useSnackbar} from 'notistack'
+import AppError from '../scripts/error/app-error'
 
 export const userPageAccess = [
 	'trackless.user.readAll',
@@ -42,9 +45,14 @@ const User = () => {
 	const {groups} = useGroups()
 	const isPresent = useIsPresent()
 	const classes = useStyles()
+	const {enqueueSnackbar} = useSnackbar()
 
 	const [currentSelectedUser, setCurrentSelectedUser] = useState<TracklessUser>(null)
 	const [isAddingUser, setIsAddingUser] = useState(false)
+
+	// States for checking the detail object input's
+	const [isCheckingInputError, setIsCheckingInputError] = useState(false)
+	const [isUsernameTaken, setIsUsernameTaken] = useState(false)
 
 	/**
 	 * This is true when the detail page is (should) be active
@@ -74,15 +82,20 @@ const User = () => {
 						properties={{
 							firstname: {
 								label: 'Firstname',
-								type: 'string'
+								type: 'string',
+								inputCheck: inputValueCheckString('firstname')
 							},
 							lastname: {
 								label: 'Lastname',
-								type: 'string'
+								type: 'string',
+								inputCheck: inputValueCheckString('lastname')
 							},
 							username: {
 								label: 'Username',
-								type: 'string'
+								type: 'string',
+								inputCheck: inputValues => {
+									return inputValueCheckString('username')(inputValues) || isCheckingInputError
+								}
 							},
 							groupID: {
 								label: 'Group',
@@ -95,24 +108,54 @@ const User = () => {
 											{group.groupName}
 										</MenuItem>
 									)
-								)
+								),
+								inputCheck: inputValueCheckString('groupID')
 							},
 							password: {
 								label: 'Password',
-								type: 'password'
+								type: 'password',
+								inputCheck: inputValueCheckString('password')
 							}
 						}}
 						editObject={currentSelectedUser}
+						isCheckError={isCheckingInputError}
 						onClose={() => {
 							setIsAddingUser(false)
 							setCurrentSelectedUser(null)
+							setIsCheckingInputError(false)
+							setIsUsernameTaken(false)
 						}}
 						onSave={(editObject, inputValues, saveType) => {
 							if (saveType === 'save') {
+								// Add the user to the system
 								void addUser(inputValues)
-									.then(() => {
-										setIsAddingUser(false)
-										setCurrentSelectedUser(null)
+									.then(saved => {
+										// Check if it's saved
+										if (saved) {
+											setIsAddingUser(false)
+											setCurrentSelectedUser(null)
+											setIsCheckingInputError(false)
+											setIsUsernameTaken(false)
+										}
+									})
+									.catch((error: unknown) => {
+										if (error instanceof AppError) {
+											// Show the user the error
+											enqueueSnackbar(
+												error.errorCode,
+												{
+													variant: 'error'
+												}
+											)
+
+											// Check for common types of error's
+											if (error.errorCode === 'trackless.require.failed') {
+												setIsCheckingInputError(true)
+											} else if (error.errorCode === 'trackless.user.usernameTaken') {
+												setIsCheckingInputError(true)
+												setIsUsernameTaken(true)
+											}
+										}
 									})
 							}
 						}}
