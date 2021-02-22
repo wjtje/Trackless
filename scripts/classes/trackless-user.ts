@@ -179,6 +179,28 @@ class TracklessUser {
 	}
 
 	/**
+	 * This function will remove a user from the server
+	 */
+	async deleteUser({serverUrl, apiKey}: {serverUrl: string; apiKey: string}) {
+		// Send the details to the server
+		const response = await fetch(
+			`${serverUrl}/user/${this.userID}`,
+			{
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${apiKey}`,
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+
+		// Check for any error
+		if (response.status !== 200) {
+			throw new AppError((await response.json()).code ?? 'Unknown')
+		}
+	}
+
+	/**
 	 * Get the user's full name
 	 */
 	get fullname() {

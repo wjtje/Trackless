@@ -16,7 +16,7 @@ interface props {
 const UserDetailPage = ({currentSelectedUser, onClose}: props) => {
 	const {groups} = useGroups()
 	const {enqueueSnackbar} = useSnackbar()
-	const {addUser, updateUser} = useUsers()
+	const {addUser, updateUser, deleteUser} = useUsers()
 
 	const [isCheckingInputError, setIsCheckingInputError] = useState(false)
 	const [isUsernameTaken, setIsUsernameTaken] = useState(false)
@@ -74,15 +74,24 @@ const UserDetailPage = ({currentSelectedUser, onClose}: props) => {
 			onSave={async (editObject, inputValues, saveType) => {
 				try {
 					if (saveType === 'save') {
+						// Create a new user
 						if (await addUser(inputValues)) {
 							onClose()
 							setIsCheckingInputError(false)
 							setIsUsernameTaken(false)
 						}
-					} else if (await updateUser({
-						editUser: editObject,
-						...inputValues
-					})) {
+					} else if (saveType === 'update') {
+						// Update a user
+						if (await updateUser({
+							editUser: editObject,
+							...inputValues
+						})) {
+							onClose()
+							setIsCheckingInputError(false)
+							setIsUsernameTaken(false)
+						}
+					} else if (saveType === 'delete' && await deleteUser(editObject)) {
+						// Remove a user
 						onClose()
 						setIsCheckingInputError(false)
 						setIsUsernameTaken(false)

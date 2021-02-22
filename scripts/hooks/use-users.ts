@@ -37,6 +37,9 @@ function useUsers(): {
 		groupID: string | number;
 	}) => Promise<boolean>;
 
+	/**
+	 * Update a user on the server
+	 */
 	updateUser: ({editUser, firstname, lastname, username, password}: {
 		editUser: TracklessUser;
 		firstname: string;
@@ -45,6 +48,11 @@ function useUsers(): {
 		password: string;
 		groupID: string | number;
 	}) => Promise<boolean>;
+
+	/**
+	 * Remove a user from the server
+	 */
+	deleteUser: (editUser: TracklessUser) => Promise<boolean>;
 } {
 	// Connect to global hooks
 	const {apiKey, serverUrl} = useContext(ServerContext)
@@ -152,12 +160,45 @@ function useUsers(): {
 		}
 	}
 
+	const deleteUser = async (editUser: TracklessUser) => {
+		// Show a removing snackbar
+		const removing = enqueueSnackbar('Removing')
+
+		try {
+			// Update the user
+			await editUser.deleteUser({
+				serverUrl,
+				apiKey
+			})
+
+			// Update the user List
+			await mutate()
+
+			// Show the user it's saved
+			enqueueSnackbar(
+				'Removed',
+				{
+					variant: 'success'
+				}
+			)
+
+			return true
+		} catch (error: unknown) {
+			// Send any error forward
+			throw error
+		} finally {
+			// Always close the snackbar
+			closeSnackbar(removing)
+		}
+	}
+
 	return {
 		users,
 		isLoading: !data && !error,
 		error,
 		addUser,
-		updateUser
+		updateUser,
+		deleteUser
 	}
 }
 

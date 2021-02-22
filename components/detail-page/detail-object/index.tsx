@@ -2,6 +2,7 @@ import {Button, createStyles, makeStyles, Typography} from '@material-ui/core'
 import React, {useEffect, useRef, useState} from 'react'
 import PageFade from '../../page-fade'
 import DetailObjectField, {detailObjectField} from './detail-object-field'
+import RemoveDialog from './remove-dialog'
 import UnsavedDialog from './unsaved-dialog'
 
 // Custom styles used by this component
@@ -43,7 +44,7 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 		/**
 		 * This function is run when the object needs saving or updating
 		 */
-		onSave: (editObject: editObjectType, inputValues: Record<propertiesKey, string>, saveType: 'save' | 'update') => void;
+		onSave: (editObject: editObjectType, inputValues: Record<propertiesKey, string>, saveType: 'save' | 'update' | 'delete') => void;
 		/**
 		 * This defines is the input error's are visable to the end user
 		 */
@@ -58,18 +59,14 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 	// State for tracking changes made
 	const [madeChanges, setMadeChanges] = useState(false)
 
-	// States and function for unsavedDialog
+	// States and function for unsavedDialog and removeDialog
 	const [unsavedDialogOpen, setUnsavedDialogOpen] = useState(false)
+	const [removeDialogOpen, setRemoveDialogOpen] = useState(false)
 	const unsavedDialogLeave = useRef(() => {
 		// This will hide the dialog and close the page
 		setUnsavedDialogOpen(false)
 		onClose()
 	})
-
-	const unsavedDialogStay = () => {
-		// This will hide the dialog
-		setUnsavedDialogOpen(false)
-	}
 
 	// UseEffect for updating the editObject
 	useEffect(
@@ -141,6 +138,18 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 				{/* Buttons */}
 				<div className={classes.actionButtons}>
 					<Button onClick={onCloseBtn}>Close</Button>
+					{
+						editObject === null ?
+							null :
+							<Button
+								onClick={() => {
+									// Show a warning to the user
+									setRemoveDialogOpen(true)
+								}}
+							>
+								Delete
+							</Button>
+					}
 					<Button
 						onClick={() => {
 							if (editObject === null) {
@@ -158,7 +167,19 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 				<UnsavedDialog
 					open={unsavedDialogOpen}
 					onLeave={unsavedDialogLeave.current}
-					onStay={unsavedDialogStay}
+					onStay={() => {
+						setUnsavedDialogOpen(false)
+					}}
+				/>
+				<RemoveDialog
+					open={removeDialogOpen}
+					onRemove={() => {
+						setRemoveDialogOpen(false)
+						onSave(editObject, inputValues, 'delete')
+					}}
+					onKeep={() => {
+						setRemoveDialogOpen(false)
+					}}
 				/>
 			</div>
 		</PageFade>
