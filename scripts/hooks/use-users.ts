@@ -29,12 +29,21 @@ function useUsers(): {
 	/**
 	 * This function will add a new user to the server
 	 */
-	addUser: ({
-		firstname,
-		lastname,
-		username,
-		groupID,
-		password
+	addUser: ({firstname, lastname, username, password, groupID}: {
+		firstname: string;
+		lastname: string;
+		username: string;
+		password: string;
+		groupID: string | number;
+	}) => Promise<boolean>;
+
+	updateUser: ({editUser, firstname, lastname, username, password}: {
+		editUser: TracklessUser;
+		firstname: string;
+		lastname: string;
+		username: string;
+		password: string;
+		groupID: string | number;
 	}) => Promise<boolean>;
 } {
 	// Connect to global hooks
@@ -78,7 +87,7 @@ function useUsers(): {
 				apiKey
 			})
 
-			// Update the location List
+			// Update the user List
 			await mutate()
 
 			// Show the user it's saved
@@ -91,9 +100,54 @@ function useUsers(): {
 
 			return true
 		} catch (error: unknown) {
+			// Send any error forward
 			throw error
 		} finally {
-			// Close the snackbar
+			// Always close the snackbar
+			closeSnackbar(saving)
+		}
+	}
+
+	const updateUser = async ({editUser, firstname, lastname, username, password, groupID}: {
+		editUser: TracklessUser;
+		firstname: string;
+		lastname: string;
+		username: string;
+		password: string;
+		groupID: string | number;
+	}) => {
+		// Show a saving snackbar
+		const saving = enqueueSnackbar('Saving')
+
+		try {
+			// Update the user
+			await editUser.updateUser({
+				firstname,
+				lastname,
+				username,
+				password,
+				groupID,
+				serverUrl,
+				apiKey
+			})
+
+			// Update the user List
+			await mutate()
+
+			// Show the user it's saved
+			enqueueSnackbar(
+				'Saved!',
+				{
+					variant: 'success'
+				}
+			)
+
+			return true
+		} catch (error: unknown) {
+			// Send any error forward
+			throw error
+		} finally {
+			// Always close the snackbar
 			closeSnackbar(saving)
 		}
 	}
@@ -102,7 +156,8 @@ function useUsers(): {
 		users,
 		isLoading: !data && !error,
 		error,
-		addUser
+		addUser,
+		updateUser
 	}
 }
 

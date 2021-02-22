@@ -43,7 +43,7 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 		/**
 		 * This function is run when the object needs saving or updating
 		 */
-		onSave: (editObject: editObjectType, inputValues: Record<propertiesKey, unknown>, saveType: 'save' | 'update') => void;
+		onSave: (editObject: editObjectType, inputValues: Record<propertiesKey, string>, saveType: 'save' | 'update') => void;
 		/**
 		 * This defines is the input error's are visable to the end user
 		 */
@@ -53,7 +53,7 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 	const classes = useStyles()
 
 	// State for all the input's
-	const [inputValues, setInputValues] = useState<Record<string, unknown>>(editObject ?? {})
+	const [inputValues, setInputValues] = useState<Record<string, string>>(editObject ?? {})
 
 	// State for tracking changes made
 	const [madeChanges, setMadeChanges] = useState(false)

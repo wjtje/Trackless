@@ -16,7 +16,7 @@ interface props {
 const UserDetailPage = ({currentSelectedUser, onClose}: props) => {
 	const {groups} = useGroups()
 	const {enqueueSnackbar} = useSnackbar()
-	const {addUser} = useUsers()
+	const {addUser, updateUser} = useUsers()
 
 	const [isCheckingInputError, setIsCheckingInputError] = useState(false)
 	const [isUsernameTaken, setIsUsernameTaken] = useState(false)
@@ -71,37 +71,40 @@ const UserDetailPage = ({currentSelectedUser, onClose}: props) => {
 				setIsUsernameTaken(false)
 			}}
 			// Save the changes
-			onSave={(editObject, inputValues, saveType) => {
-				if (saveType === 'save') {
-					// Add the user to the system
-					void addUser(inputValues)
-						.then(saved => {
-							// Check if it's saved
-							if (saved) {
-								onClose()
-								setIsCheckingInputError(false)
-								setIsUsernameTaken(false)
+			onSave={async (editObject, inputValues, saveType) => {
+				try {
+					if (saveType === 'save') {
+						if (await addUser(inputValues)) {
+							onClose()
+							setIsCheckingInputError(false)
+							setIsUsernameTaken(false)
+						}
+					} else if (await updateUser({
+						editUser: editObject,
+						...inputValues
+					})) {
+						onClose()
+						setIsCheckingInputError(false)
+						setIsUsernameTaken(false)
+					}
+				} catch (error: unknown) {
+					if (error instanceof AppError) {
+						// Show the user the error
+						enqueueSnackbar(
+							error.errorCode,
+							{
+								variant: 'error'
 							}
-						})
-						.catch((error: unknown) => {
-							if (error instanceof AppError) {
-								// Show the user the error
-								enqueueSnackbar(
-									error.errorCode,
-									{
-										variant: 'error'
-									}
-								)
+						)
 
-								// Check for common types of error's
-								if (error.errorCode === 'trackless.require.failed') {
-									setIsCheckingInputError(true)
-								} else if (error.errorCode === 'trackless.user.usernameTaken') {
-									setIsCheckingInputError(true)
-									setIsUsernameTaken(true)
-								}
-							}
-						})
+						// Check for common types of error's
+						if (error.errorCode === 'trackless.require.failed') {
+							setIsCheckingInputError(true)
+						} else if (error.errorCode === 'trackless.user.usernameTaken') {
+							setIsCheckingInputError(true)
+							setIsUsernameTaken(true)
+						}
+					}
 				}
 			}}
 		/>

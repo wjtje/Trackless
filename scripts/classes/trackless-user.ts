@@ -119,6 +119,66 @@ class TracklessUser {
 	}
 
 	/**
+	 * This function will update an exsisting Trackless user with new values
+	 */
+	async updateUser({firstname, lastname, username, password, groupID, serverUrl, apiKey}: {
+		firstname?: string;
+		lastname?: string;
+		username?: string;
+		password?: string;
+		groupID?: string | number;
+		serverUrl: string;
+		apiKey: string;
+	}) {
+		// Send the details to the server
+		const responsePatch = await fetch(
+			`${serverUrl}/user/${this.userID}`,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					// This makes sure only valid values makes it into the object
+					// Values that are null, undefined or empty are removed
+					...(firstname !== null && firstname !== undefined && firstname !== '') ? {firstname} : null,
+					...(lastname !== null && lastname !== undefined && lastname !== '') ? {lastname} : null,
+					...(username !== null && username !== undefined && username !== '') ? {username} : null,
+					...(password !== null && password !== undefined && password !== '') ? {password} : null
+				}),
+				headers: {
+					Authorization: `Bearer ${String(apiKey)}`,
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+
+		// Check for any error
+		if (responsePatch.status !== 200) {
+			throw new AppError((await responsePatch.json()).code ?? 'Unknown')
+		}
+
+		// Check if we need to change the groupID
+		if (groupID !== null && groupID !== undefined && groupID !== '') {
+			const responseGroupID = await fetch(
+				`${serverUrl}/group/${groupID}/user`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						userID: this.userID
+					}),
+					headers: {
+						Authorization: `Bearer ${String(apiKey)}`,
+						'Content-Type': 'application/json'
+					}
+				}
+			)
+
+			// Check for any error
+			if (responseGroupID.status !== 201) {
+				throw new AppError((await responseGroupID.json()).code ?? 'Unknown')
+			}
+		}
+	}
+
+	/**
 	 * Get the user's full name
 	 */
 	get fullname() {
