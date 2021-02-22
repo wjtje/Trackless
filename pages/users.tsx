@@ -1,4 +1,4 @@
-import {createStyles, Fab, List, ListItem, ListItemText, makeStyles, MenuItem, Zoom} from '@material-ui/core'
+import {createStyles, Fab, makeStyles, Zoom} from '@material-ui/core'
 import {useIsPresent} from 'framer-motion'
 import React, {useState} from 'react'
 import DetailPage from '../components/detail-page'
@@ -9,11 +9,7 @@ import TracklessUser from '../scripts/classes/trackless-user'
 import useUsers from '../scripts/hooks/use-users'
 import {Add as AddIcon} from '@material-ui/icons'
 import SearchableList from '../components/searchable-list'
-import DetailObject from '../components/detail-page/detail-object'
-import useGroups from '../scripts/hooks/use-group'
-import {inputValueCheckString} from '../components/detail-page/detail-object/input-value-check'
-import {useSnackbar} from 'notistack'
-import AppError from '../scripts/error/app-error'
+import UserDetailPage from '../components/user-detail-page'
 
 export const userPageAccess = [
 	'trackless.user.readAll',
@@ -41,18 +37,12 @@ const useStyles = makeStyles(theme =>
  * A page to see, edit and add users to the system
  */
 const User = () => {
-	const {users, addUser} = useUsers()
-	const {groups} = useGroups()
+	const {users} = useUsers()
 	const isPresent = useIsPresent()
 	const classes = useStyles()
-	const {enqueueSnackbar} = useSnackbar()
 
 	const [currentSelectedUser, setCurrentSelectedUser] = useState<TracklessUser>(null)
 	const [isAddingUser, setIsAddingUser] = useState(false)
-
-	// States for checking the detail object input's
-	const [isCheckingInputError, setIsCheckingInputError] = useState(false)
-	const [isUsernameTaken, setIsUsernameTaken] = useState(false)
 
 	/**
 	 * This is true when the detail page is (should) be active
@@ -67,6 +57,7 @@ const User = () => {
 				detailActive={detailActive}
 			>
 				<ListPane>
+					{/* List with all user's */}
 					<SearchableList<TracklessUser>
 						list={users}
 						listProperties={{
@@ -78,86 +69,12 @@ const User = () => {
 					/>
 				</ListPane>
 				<DetailPane>
-					<DetailObject
-						properties={{
-							firstname: {
-								label: 'Firstname',
-								type: 'string',
-								inputCheck: inputValueCheckString('firstname')
-							},
-							lastname: {
-								label: 'Lastname',
-								type: 'string',
-								inputCheck: inputValueCheckString('lastname')
-							},
-							username: {
-								label: 'Username',
-								type: 'string',
-								inputCheck: inputValues => {
-									return inputValueCheckString('username')(inputValues) || isCheckingInputError
-								}
-							},
-							groupID: {
-								label: 'Group',
-								menuItems: groups.map(
-									group => (
-										<MenuItem
-											key={group.groupID}
-											value={group.groupID}
-										>
-											{group.groupName}
-										</MenuItem>
-									)
-								),
-								inputCheck: inputValueCheckString('groupID')
-							},
-							password: {
-								label: 'Password',
-								type: 'password',
-								inputCheck: inputValueCheckString('password')
-							}
-						}}
-						editObject={currentSelectedUser}
-						isCheckError={isCheckingInputError}
+					{/* Add and edit page for user's */}
+					<UserDetailPage
+						currentSelectedUser={currentSelectedUser}
 						onClose={() => {
-							setIsAddingUser(false)
 							setCurrentSelectedUser(null)
-							setIsCheckingInputError(false)
-							setIsUsernameTaken(false)
-						}}
-						onSave={(editObject, inputValues, saveType) => {
-							if (saveType === 'save') {
-								// Add the user to the system
-								void addUser(inputValues)
-									.then(saved => {
-										// Check if it's saved
-										if (saved) {
-											setIsAddingUser(false)
-											setCurrentSelectedUser(null)
-											setIsCheckingInputError(false)
-											setIsUsernameTaken(false)
-										}
-									})
-									.catch((error: unknown) => {
-										if (error instanceof AppError) {
-											// Show the user the error
-											enqueueSnackbar(
-												error.errorCode,
-												{
-													variant: 'error'
-												}
-											)
-
-											// Check for common types of error's
-											if (error.errorCode === 'trackless.require.failed') {
-												setIsCheckingInputError(true)
-											} else if (error.errorCode === 'trackless.user.usernameTaken') {
-												setIsCheckingInputError(true)
-												setIsUsernameTaken(true)
-											}
-										}
-									})
-							}
+							setIsAddingUser(false)
 						}}
 					/>
 				</DetailPane>
