@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme =>
  * A page to see, edit and add users to the system
  */
 const User = () => {
-	const {users} = useUsers()
+	const {users, addUser} = useUsers()
 	const {groups} = useGroups()
 	const isPresent = useIsPresent()
 	const classes = useStyles()
@@ -100,16 +100,21 @@ const User = () => {
 							password: {
 								label: 'Password',
 								type: 'password'
-							},
-							passwordRepeat: {
-								label: 'Repeat password',
-								type: 'password'
 							}
 						}}
 						editObject={currentSelectedUser}
 						onClose={() => {
 							setIsAddingUser(false)
 							setCurrentSelectedUser(null)
+						}}
+						onSave={(editObject, inputValues, saveType) => {
+							if (saveType === 'save') {
+								void addUser(inputValues)
+									.then(() => {
+										setIsAddingUser(false)
+										setCurrentSelectedUser(null)
+									})
+							}
 						}}
 					/>
 				</DetailPane>

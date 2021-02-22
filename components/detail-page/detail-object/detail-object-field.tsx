@@ -19,6 +19,9 @@ export interface detailObjectField {
 	 * The type of the input field
 	 */
 	type?: 'string' | 'number' | 'password';
+	/**
+	 * Put your menuItems here if you want to display a list
+	 */
 	menuItems?: JSX.Element[];
 }
 

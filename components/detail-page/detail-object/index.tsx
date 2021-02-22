@@ -4,6 +4,7 @@ import PageFade from '../../page-fade'
 import DetailObjectField, {detailObjectField} from './detail-object-field'
 import UnsavedDialog from './unsaved-dialog'
 
+// Custom styles used by this component
 const useStyles = makeStyles(theme =>
 	createStyles({
 		root: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles(theme =>
 	})
 )
 
-interface props {
+interface props<T> {
 	/**
 	 * This function is run when the user clickes on the close button
 	 */
@@ -32,7 +33,11 @@ interface props {
 	/**
 	 * This is the object you want to edit
 	 */
-	editObject: any;
+	editObject: T;
+	/**
+	 * This function is run when the object needs saving or updating
+	 */
+	onSave: (editObject: T, inputValues: any, saveType: 'save' | 'update') => void;
 }
 
 /**
@@ -40,7 +45,8 @@ interface props {
  *
  * You need te define the properties
  */
-const DetailObject = ({onClose, properties, editObject}: props) => {
+// eslint-disable-next-line @typescript-eslint/comma-dangle
+const DetailObject = <T,>({onClose, properties, editObject, onSave}: props<T>) => {
 	const classes = useStyles()
 	const [inputValues, setInputValues] = useState<Record<string, unknown>>(editObject ?? {})
 
@@ -127,6 +133,13 @@ const DetailObject = ({onClose, properties, editObject}: props) => {
 				{/* Buttons */}
 				<div className={classes.actionButtons}>
 					<Button onClick={onCloseBtn}>Close</Button>
+					<Button
+						onClick={() => {
+							onSave(editObject, inputValues, 'save')
+						}}
+					>
+						Save
+					</Button>
 				</div>
 
 				{/* Dialogs */}
