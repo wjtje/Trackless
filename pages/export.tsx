@@ -1,5 +1,5 @@
 import {Button, createStyles, Fab, List, ListItem, ListItemText, makeStyles, Theme, Typography, Zoom} from '@material-ui/core'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
 import TracklessUser from '../scripts/classes/trackless-user'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -9,6 +9,9 @@ import DetailPage from '../components/detail-page'
 import ListPane from '../components/detail-page/list-pane'
 import DetailPane from '../components/detail-page/detail-pane'
 import SearchableList from '../components/searchable-list'
+import useWork from '../scripts/hooks/use-work'
+import TracklessWork from '../scripts/classes/trackless-work'
+import {add, endOfDay, endOfWeek, format, startOfWeek} from 'date-fns'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -35,10 +38,47 @@ const useStyles = makeStyles((theme: Theme) =>
  */
 const Export = () => {
 	const {users} = useUsers()
+	const {getWork} = useWork()
 	const classes = useStyles()
 	const isPresent = useIsPresent() // This is used for the zoom animation
 
 	const [selectedUser, setSelectedUser] = useState<TracklessUser>(null)
+	const [userWork, setUserWork] = useState<Record<string, TracklessWork[]>>({})
+	const [userWorkTime, setUserWorkTime] = useState<Record<string, number>>({})
+
+	// Update the work list when the user's changes
+	useEffect(() => {
+		const previousWeek = add(Date.now(), {weeks: -1})
+		const startDate = format(startOfWeek(previousWeek), 'yyyy-LL-dd')
+		const endDate = format(endOfWeek(previousWeek), 'yyyy-LL-dd')
+
+		users.forEach(async user => {
+			console.log(`Getting work for user: ${String(user.userID)}`)
+
+			// Get the work
+			const work = await getWork(
+				user.userID,
+				startDate,
+				endDate
+			)
+
+			// Save the work
+			setUserWork(userWork => ({
+				...userWork,
+				[user.userID]: work
+			}))
+
+			// Save time time
+			// eslint-disable-next-line unicorn/no-array-reduce
+			const time = work.map(w => w.time).reduce((a, b) => a + Number(b), 0)
+
+			setUserWorkTime(userWorkTime => ({
+				...userWorkTime,
+				[user.userID]: time
+			}))
+		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [users.length])
 
 	return (
 		<>
@@ -55,7 +95,7 @@ const Export = () => {
 							listProperties={{
 								key: 'userID',
 								primaryText: 'fullname',
-								secondaryText: () => '{hours} recorded last week'
+								secondaryText: user => `${userWorkTime[user.userID] ?? 0} hour(s) recorded last week`
 							}}
 							onClick={setSelectedUser}
 						/>
