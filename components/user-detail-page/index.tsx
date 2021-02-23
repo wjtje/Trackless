@@ -25,6 +25,7 @@ const UserDetailPage = ({currentSelectedUser, onClose}: props) => {
 		<DetailObject
 			editObject={currentSelectedUser}
 			isCheckError={isCheckingInputError}
+			objectName="user"
 			// The input fields
 			properties={{
 				firstname: {

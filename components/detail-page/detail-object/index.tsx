@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme =>
  * You need te define the properties
  */
 const DetailObject = <editObjectType, propertiesKey extends string>(
-	{onClose, properties, editObject, onSave, isCheckError}: {
+	{onClose, properties, editObject, onSave, isCheckError, objectName}: {
 		/**
 		 * This function is run when the user clickes on the close button
 		 */
@@ -49,6 +49,13 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 		 * This defines is the input error's are visable to the end user
 		 */
 		isCheckError: boolean;
+		/**
+		 * This defines the title
+		 *
+		 * Add {objectName},
+		 * Edit {objectName}
+		 */
+		objectName: string;
 	}
 ) => {
 	const classes = useStyles()
@@ -110,7 +117,7 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 			<div className={classes.root}>
 				{/* The title */}
 				<Typography variant="h5">
-					{editObject === null ? 'Add object' : 'Edit object'}
+					{editObject === null ? `Add ${objectName}` : `Edit ${objectName}`}
 				</Typography>
 
 				{/* The input fields */}
