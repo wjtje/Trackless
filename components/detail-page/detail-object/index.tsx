@@ -122,24 +122,30 @@ const DetailObject = <editObjectType, propertiesKey extends string>(
 
 				{/* The input fields */}
 				{
-					Object.entries<detailObjectField<propertiesKey>>(properties).map(([key, property]) => (
-						<DetailObjectField
-							key={key}
-							label={property.label}
-							menuItems={property.menuItems}
-							type={property.type}
-							error={property.inputCheck(inputValues) && isCheckError}
-							value={inputValues[key] ?? ''}
-							onChange={value => {
-								// Save the changes made
-								setMadeChanges(true)
-								setInputValues({
-									...inputValues,
-									[key]: value
-								})
-							}}
-						/>
-					))
+					Object.entries<detailObjectField<propertiesKey>>(properties).map(([key, property]) => {
+						if (!(editObject === null && property.editOnly)) {
+							return (
+								<DetailObjectField
+									key={key}
+									label={property.label}
+									menuItems={property.menuItems}
+									type={property.type}
+									error={property.inputCheck(inputValues) && isCheckError}
+									value={inputValues[key] ?? ''}
+									onChange={value => {
+										// Save the changes made
+										setMadeChanges(true)
+										setInputValues({
+											...inputValues,
+											[key]: value
+										})
+									}}
+								/>
+							)
+						}
+
+						return (<div key={key}/>)
+					})
 				}
 
 				{/* Buttons */}

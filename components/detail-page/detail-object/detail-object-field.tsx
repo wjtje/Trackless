@@ -27,6 +27,10 @@ export interface detailObjectField<propertiesKey extends string> {
 	 * This function will check if the input value is valid
 	 */
 	inputCheck: (inputValues: Record<propertiesKey, unknown>) => boolean;
+	/**
+	 * If this it true the input will only be shown on the edit page
+	 */
+	editOnly?: boolean;
 }
 
 interface props {

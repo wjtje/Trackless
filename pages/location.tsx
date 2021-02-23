@@ -11,6 +11,7 @@ import DetailPage from '../components/detail-page'
 import DetailPane from '../components/detail-page/detail-pane'
 import ListPane from '../components/detail-page/list-pane'
 import SearchableList from '../components/searchable-list'
+import LocationDetailPage from '../components/location-detail-page'
 
 export const locationPageAccess = [
 	'trackless.location.read',
@@ -97,11 +98,9 @@ const Location = () => {
 						/>
 					</ListPane>
 					<DetailPane>
-						<LocationAdd
-							key="add"
-							editLocation={currentLocation}
+						<LocationDetailPage
+							currentSelectedLocation={currentLocation}
 							onClose={() => {
-								// Hide the dialog
 								setAddLocation(false)
 								setCurrentLocation(null)
 							}}

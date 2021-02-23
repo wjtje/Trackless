@@ -6,14 +6,6 @@ import TracklessLocation from '../classes/trackless-location'
 import errorState from '../error/error-state'
 import HttpRequestError from '../error/http-request-error'
 
-interface updateProps {
-	locationID: number;
-	place: string;
-	name: string;
-	id: string;
-	hidden: number;
-}
-
 /**
  * Get all location on the server sorted by place and name
  */
@@ -36,22 +28,24 @@ function useLocations(hidden: boolean): {
 	/**
 	 * This function will send the data of this new location to the server,
 	 * makes sure it saved and refresh the internal list
-	 *
-	 * @param place The place of the new location
-	 * @param name The name of the new location
-	 * @param id The internal ID of the new location
 	 */
-	addLocation: (place: string, name: string, id: string) => Promise<void>;
+	addLocation: ({place, name, id}: {place: string; name: string; id: string}) => Promise<boolean>;
 
 	/**
 	 * This function will update a exsisting location with new data
 	 */
-	updateLocation: (values: updateProps) => Promise<void>;
+	updateLocation: ({editLocation, place, name, id, hidden}: {
+		editLocation: TracklessLocation;
+		place: string;
+		name: string;
+		id: string;
+		hidden: string;
+	}) => Promise<boolean>;
 
 	/**
 	 * This function will delete a location from the server
 	 */
-	deleteLocation: (locationID: number) => Promise<void>;
+	deleteLocation: (location: TracklessLocation) => Promise<boolean>;
 } {
 	// Connect to global hooks
 	const {apiKey, serverUrl} = useContext(ServerContext)
@@ -78,95 +72,97 @@ function useLocations(hidden: boolean): {
 		})
 	}
 
-	const addLocation = async (place: string, name: string, id: string): Promise<void> => {
-		console.log('Adding a new location')
+	const addLocation = async ({place, name, id}: {place: string; name: string; id: string}): Promise<boolean> => {
+		// Show a snackbar
+		const saving = enqueueSnackbar('Saving')
 
-		return new Promise((resolve, reject) => {
-			// Show a saving snackbar
-			const saving = enqueueSnackbar('Saving')
-
-			// Send the data th the server
-			fetch(`${serverUrl}/location`, {
-				method: 'POST',
-				body: JSON.stringify({
-					name,
-					place,
-					id
-				}),
-				headers: {
-					Authorization: `Bearer ${apiKey}`,
-					'Content-Type': 'application/json'
-				}
+		try {
+			// Create a new user
+			await TracklessLocation.createLocation({
+				name,
+				place,
+				id,
+				serverUrl,
+				apiKey
 			})
-				.then(async response => {
-					// Handle the request
-					await handleRequest(response, saving, 201, resolve)
-				})
-				.catch(error => {
-					errorState('location', error, enqueueSnackbar)
-					reject()
-				})
-		})
+
+			// Update the list
+			await mutate()
+
+			// Show the user its done
+			enqueueSnackbar('Saved!', {variant: 'success'})
+
+			return true
+		} catch (error: unknown) {
+			throw error
+		} finally {
+			// Always close the snackbar
+			closeSnackbar(saving)
+		}
 	}
 
-	const updateLocation = async ({locationID, place, name, id, hidden}: {
-		locationID: number; place: string; name: string; id: string; hidden: number;
-	}): Promise<void> => {
-		console.log('Updating a location')
+	const updateLocation = async ({editLocation, place, name, id, hidden}: {
+		editLocation: TracklessLocation;
+		place: string;
+		name: string;
+		id: string;
+		hidden: string;
+	}): Promise<boolean> => {
+		// Show a saving snackbar
+		const saving = enqueueSnackbar('Saving')
 
-		return new Promise((resolve, reject) => {
-			// Show a saving snackbar
-			const saving = enqueueSnackbar('Saving')
-
-			// Send the data to the server
-			fetch(`${serverUrl}/location/${locationID}`, {
-				method: 'PATCH',
-				body: JSON.stringify({
-					name,
-					place,
-					id,
-					hidden
-				}),
-				headers: {
-					Authorization: `Bearer ${apiKey}`,
-					'Content-Type': 'application/json'
-				}
+		try {
+			// Update the user
+			await editLocation.updateLocation({
+				place,
+				name,
+				id,
+				hidden,
+				serverUrl,
+				apiKey
 			})
-				.then(async response => {
-					// Handle the request
-					await handleRequest(response, saving, 200, resolve)
-				})
-				.catch(error => {
-					errorState('location', error, enqueueSnackbar)
-					reject()
-				})
-		})
+
+			// Update the user List
+			await mutate()
+
+			// Show the user it's saved
+			enqueueSnackbar('Saved!', {variant: 'success'})
+
+			return true
+		} catch (error: unknown) {
+			// Send any error forward
+			throw error
+		} finally {
+			// Always close the snackbar
+			closeSnackbar(saving)
+		}
 	}
 
-	const deleteLocation = async (locationID: number): Promise<void> => {
-		console.log('Deleting a location')
+	const deleteLocation = async (location: TracklessLocation): Promise<boolean> => {
+		// Show a removing snackbar
+		const removing = enqueueSnackbar('Removing')
 
-		return new Promise((resolve, reject) => {
-			// Show a snackbar
-			const deleting = enqueueSnackbar('Deleting')
-
-			// Send the request to the server
-			fetch(`${serverUrl}/location/${locationID}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${apiKey}`,
-					'Content-Type': 'application/json'
-				}
+		try {
+			// Update the user
+			await location.deleteLocation({
+				serverUrl,
+				apiKey
 			})
-				.then(async response => {
-					// Handle the request
-					await handleRequest(response, deleting, 200, resolve)
-				})
-				.catch(error => {
-					errorState('location', error, enqueueSnackbar)
-					reject()
-				})
-		})
+
+			// Update the user List
+			await mutate()
+
+			// Show the user it's saved
+			enqueueSnackbar('Removed', {variant: 'success'})
+
+			return true
+		} catch (error: unknown) {
+			// Send any error forward
+			throw error
+		} finally {
+			// Always close the snackbar
+			closeSnackbar(removing)
+		}
 	}
 
 	return {
@@ -176,46 +172,6 @@ function useLocations(hidden: boolean): {
 		addLocation,
 		updateLocation,
 		deleteLocation
-	}
-
-	/**
-	 * This function will handle a request
-	 * @param response
-	 * @param snackbar The snackbar to close
-	 * @param resolve	The function to run to resolve it
-	 * @param status The status code thats correct
-	 */
-	async function handleRequest(response: Response, snackbar, status: number, resolve: (value: void | PromiseLike<void>) => void) {
-		const result = await response.json()
-
-		// Test for any error's
-		if (response.status === status) {
-			// Saved !
-			console.log(result)
-
-			// Update the list
-			updateLocations(snackbar)
-
-			// Done!
-			resolve()
-		} else {
-			// Something went wrong
-			closeSnackbar(snackbar)
-			throw new HttpRequestError(response.status, result)
-		}
-	}
-
-	/**
-	 * This function full close a snackbar, update the list and then show a new one
-	 */
-	function updateLocations(saving) {
-		void mutate().then(_ => {
-			// Show a message to the user
-			closeSnackbar(saving)
-			enqueueSnackbar('Saved!', {
-				variant: 'success'
-			})
-		})
 	}
 }
 

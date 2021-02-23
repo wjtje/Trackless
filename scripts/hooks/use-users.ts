@@ -3,7 +3,6 @@ import {useContext, useEffect} from 'react'
 import useSWR from 'swr'
 import {ServerContext} from '../../pages/_app'
 import TracklessUser from '../classes/trackless-user'
-import AppError from '../error/app-error'
 import errorState from '../error/error-state'
 import HttpRequestError from '../error/http-request-error'
 
