@@ -29,7 +29,7 @@ function useLocations(hidden: boolean): {
 	isLoading: boolean;
 
 	/**
-	 * This value contains any error's
+	 * This value is true if the current data is outdated
 	 */
 	error: HttpRequestError;
 
@@ -179,7 +179,7 @@ function useLocations(hidden: boolean): {
 	}
 
 	/**
-	 * This dunction will handle a request
+	 * This function will handle a request
 	 * @param response
 	 * @param snackbar The snackbar to close
 	 * @param resolve	The function to run to resolve it

@@ -1,14 +1,29 @@
-import {Button, Container, TextField, Typography} from '@material-ui/core'
+import {Button, Container, createStyles, makeStyles, TextField, Typography} from '@material-ui/core'
 import React, {useState} from 'react'
-import styles from '../styles/Login.module.css'
 import {useSnackbar} from 'notistack'
 import getApiKey from '../scripts/pages/login/get-api-key'
 import {ServerContext} from './_app'
 import Head from 'next/head'
 import PageFade from '../components/page-fade'
 
+const useStyles = makeStyles(theme =>
+	createStyles({
+		root: {
+			paddingBottom: theme.spacing(2)
+		},
+		title: {
+			paddingTop: theme.spacing(3),
+			paddingBottom: theme.spacing(3)
+		},
+		input: {
+			marginBottom: theme.spacing(2)
+		}
+	})
+)
+
 const LoginPage = () => {
 	const {enqueueSnackbar} = useSnackbar()
+	const classes = useStyles()
 
 	// States for the inputs
 	const [serverUrl, setServerUrl] = useState('')
@@ -24,13 +39,11 @@ const LoginPage = () => {
 
 			<Container
 				maxWidth="sm"
-				style={{
-					paddingBottom: 16
-				}}
+				className={classes.root}
 			>
 				{/* The app title */}
 				<Typography
-					className={styles.title}
+					className={classes.title}
 					variant="h3"
 					align="center"
 					color="secondary"
@@ -41,7 +54,7 @@ const LoginPage = () => {
 				<TextField
 					fullWidth
 					required
-					className={styles.input}
+					className={classes.input}
 					variant="outlined"
 					label="Server"
 					value={serverUrl}
@@ -53,7 +66,7 @@ const LoginPage = () => {
 				<TextField
 					fullWidth
 					required
-					className={styles.input}
+					className={classes.input}
 					variant="outlined"
 					label="Username"
 					value={username}
@@ -65,7 +78,7 @@ const LoginPage = () => {
 				<TextField
 					fullWidth
 					required
-					className={styles.input}
+					className={classes.input}
 					variant="outlined"
 					label="Password"
 					type="password"
@@ -77,7 +90,7 @@ const LoginPage = () => {
 
 				<TextField
 					fullWidth
-					className={styles.input}
+					className={classes.input}
 					variant="outlined"
 					label="Device name"
 					value={deviceName}
@@ -90,7 +103,7 @@ const LoginPage = () => {
 					{value => (
 						<Button
 							fullWidth
-							className={styles.input}
+							className={classes.input}
 							variant="contained"
 							color="primary"
 							onClick={() => {
