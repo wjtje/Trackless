@@ -10,6 +10,11 @@ import '../styles/globals.css'
 import theme from '../theme/theme'
 import AppBase from '../components/app-base'
 
+// Import sentry
+import sentry from '../scripts/sentry'
+
+sentry()
+
 const useServerUrl = createPersistedState('serverUrl')
 const useApiKey = createPersistedState('apiKey')
 

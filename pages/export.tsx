@@ -11,7 +11,8 @@ import DetailPane from '../components/detail-page/detail-pane'
 import SearchableList from '../components/searchable-list'
 import useWork from '../scripts/hooks/use-work'
 import TracklessWork from '../scripts/classes/trackless-work'
-import {add, endOfDay, endOfWeek, format, startOfWeek} from 'date-fns'
+import convertTracklessWorkToPDF from '../scripts/pages/export/convert-pdf'
+import {DateTime} from 'luxon'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -48,9 +49,9 @@ const Export = () => {
 
 	// Update the work list when the user's changes
 	useEffect(() => {
-		const previousWeek = add(Date.now(), {weeks: -1})
-		const startDate = format(startOfWeek(previousWeek), 'yyyy-LL-dd')
-		const endDate = format(endOfWeek(previousWeek), 'yyyy-LL-dd')
+		const previousWeek = DateTime.now().minus({week: 1})
+		const startDate = previousWeek.startOf('week').toISODate()
+		const endDate = previousWeek.endOf('week').toISODate()
 
 		users.forEach(async user => {
 			console.log(`Getting work for user: ${String(user.userID)}`)
@@ -79,6 +80,23 @@ const Export = () => {
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [users.length])
+
+	// This function will handle the download button
+	const onDownload = () => {
+		const startDate = DateTime.now().minus({week: 1}).startOf('week')
+
+		// Check if there is a user selected
+		if (selectedUser === null) {
+			for (const user of users) {
+				// Check if the user has any work
+				if (userWork[user.userID].length > 0) {
+					convertTracklessWorkToPDF(user, userWork[user.userID], startDate)
+				}
+			}
+		} else {
+			convertTracklessWorkToPDF(selectedUser, userWork[selectedUser.userID], startDate)
+		}
+	}
 
 	return (
 		<>
@@ -121,6 +139,7 @@ const Export = () => {
 					className={classes.fab}
 					variant="extended"
 					color="secondary"
+					onClick={onDownload}
 				>
 					<GetAppIcon className={classes.extendedIcon}/>
 					Download
