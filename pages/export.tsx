@@ -1,4 +1,4 @@
-import {Button, createStyles, Fab, List, ListItem, ListItemText, makeStyles, Theme, Typography, Zoom} from '@material-ui/core'
+import {AppBar, createStyles, Fab, IconButton, makeStyles, Theme, Toolbar, Typography, Zoom} from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import useUsers from '../scripts/hooks/use-users'
 import TracklessUser from '../scripts/classes/trackless-user'
@@ -13,6 +13,8 @@ import useWork from '../scripts/hooks/use-work'
 import TracklessWork from '../scripts/classes/trackless-work'
 import convertTracklessWorkToPDF from '../scripts/pages/export/convert-pdf'
 import {DateTime} from 'luxon'
+import WorkList from '../components/work-list'
+import CloseIcon from '@material-ui/icons/Close'
 
 export const exportPageAccess = [
 	'trackless.user.readAll',
@@ -30,6 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		extendedIcon: {
 			marginRight: theme.spacing(1)
+		},
+		title: {
+			flexGrow: 1
 		}
 	})
 )
@@ -120,15 +125,25 @@ const Export = () => {
 					</ListPane>
 					<DetailPane>
 						{/* Show information about the selected user */}
-						<PageFade>
-							<Typography>{selectedUser?.fullname} - {selectedUser?.userID}</Typography>
-							<Button
-								onClick={() => {
-									setSelectedUser(null)
-								}}
-							>
-								Close
-							</Button>
+						<PageFade key={selectedUser?.userID}>
+							{/* Display an app bar with the user's name and close button */}
+							<AppBar position="sticky" color="secondary">
+								<Toolbar>
+									<Typography variant="h6" className={classes.title}>
+										{selectedUser?.fullname} - {selectedUser?.userID}
+									</Typography>
+									<IconButton
+										color="inherit"
+										onClick={() => {
+											setSelectedUser(null)
+										}}
+									>
+										<CloseIcon/>
+									</IconButton>
+								</Toolbar>
+							</AppBar>
+							{/* List the user's work */}
+							<WorkList workList={userWork[selectedUser?.userID]}/>
 						</PageFade>
 					</DetailPane>
 				</DetailPage>
