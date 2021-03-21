@@ -13,6 +13,7 @@ const WorkListItem = ({work}: props) => {
 				primary={work.location.fullName}
 				secondary={work.description}
 			/>
+			{work.time} Hour(s)
 		</ListItem>
 	)
 }

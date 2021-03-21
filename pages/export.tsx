@@ -35,6 +35,16 @@ const useStyles = makeStyles((theme: Theme) =>
 		},
 		title: {
 			flexGrow: 1
+		},
+		workListContainer: {
+			height: 'calc(100% - 56px)',
+			overflow: 'auto',
+			'@media (min-width:0px) and (orientation: landscape)': {
+				height: 'calc(100% - 48px)'
+			},
+			[theme.breakpoints.up('sm')]: {
+				height: 'calc(100% - 64px)'
+			}
 		}
 	})
 )
@@ -127,11 +137,16 @@ const Export = () => {
 						{/* Show information about the selected user */}
 						<PageFade key={selectedUser?.userID}>
 							{/* Display an app bar with the user's name and close button */}
-							<AppBar position="sticky" color="secondary">
+							<AppBar position="static" color="secondary">
 								<Toolbar>
 									<Typography variant="h6" className={classes.title}>
 										{selectedUser?.fullname} - {selectedUser?.userID}
 									</Typography>
+									{/* <IconButton
+										color="inherit"
+									>
+										<AddIcon/>
+									</IconButton> */}
 									<IconButton
 										color="inherit"
 										onClick={() => {
@@ -143,7 +158,9 @@ const Export = () => {
 								</Toolbar>
 							</AppBar>
 							{/* List the user's work */}
-							<WorkList workList={userWork[selectedUser?.userID]}/>
+							<div className={classes.workListContainer}>
+								<WorkList workList={userWork[selectedUser?.userID]}/>
+							</div>
 						</PageFade>
 					</DetailPane>
 				</DetailPage>

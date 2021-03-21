@@ -20,7 +20,7 @@ function useWork(): {
 	const getWork = async (userID: number | string, startDate: string, endDate: string) => {
 		// Get the data from the server
 		const response = await fetch(
-			`${serverUrl}/user/${String(userID)}/work?startDate=${startDate}&endDate=${endDate}`,
+			`${serverUrl}/user/${String(userID)}/work?startDate=${startDate}&endDate=${endDate}&sort=date`,
 			{
 				method: 'GET',
 				headers: {
